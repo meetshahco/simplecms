@@ -15,11 +15,7 @@ interface CaseStudyReaderProps {
     content: string;
 }
 
-function estimateReadingTime(html: string): number {
-    const text = html.replace(/<[^>]+>/g, " ");
-    const words = text.trim().split(/\s+/).length;
-    return Math.max(1, Math.round(words / 238));
-}
+
 
 export function CaseStudyReader({
     projectId,
@@ -45,15 +41,7 @@ export function CaseStudyReader({
         return unsub;
     }, [scrollYProgress]);
 
-    const readingTime = estimateReadingTime(content);
 
-    const formattedDate = publishedAt
-        ? new Date(publishedAt).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-          })
-        : null;
 
     return (
         <div className="min-h-screen bg-[#050505] text-white">
@@ -120,16 +108,7 @@ export function CaseStudyReader({
                         </p>
                     )}
 
-                    {/* Meta row */}
-                    <div className="flex items-center gap-4 flex-wrap">
-                        {formattedDate && (
-                            <span className="text-sm md:text-base text-neutral-500 font-medium">{formattedDate}</span>
-                        )}
-                        {formattedDate && (
-                            <span className="w-1 h-1 rounded-full bg-neutral-700" />
-                        )}
-                        <span className="text-sm md:text-base text-neutral-500 font-medium">{readingTime} min read</span>
-                    </div>
+
 
                     {/* Divider */}
                     <div className="mt-12 h-px bg-white/10" />
