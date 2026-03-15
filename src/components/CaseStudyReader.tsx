@@ -93,7 +93,7 @@ export function CaseStudyReader({
             )}
 
             {/* ── Header ── */}
-            <header className={`max-w-2xl mx-auto px-6 ${coverImage ? "pt-14" : "pt-28"} pb-12`}>
+            <header className={`max-w-4xl mx-auto px-6 ${coverImage ? "pt-14" : "pt-28"} pb-12`}>
                 {/* Back link (above fold, visible before scrolling) */}
                 {!coverImage && (
                     <Link
@@ -133,12 +133,12 @@ export function CaseStudyReader({
             {/* ── Article body ── */}
             <article
                 ref={articleRef}
-                className="max-w-2xl mx-auto px-6 pb-32 prose-reading"
+                className="max-w-4xl mx-auto px-6 pb-32 prose prose-invert prose-lg max-w-none prose-reading prose-headings:font-heading prose-headings:font-bold prose-headings:text-white prose-a:text-white prose-a:underline prose-img:rounded-2xl"
                 dangerouslySetInnerHTML={{ __html: content }}
             />
 
             {/* ── Bottom CTA ── */}
-            <div className="max-w-2xl mx-auto px-6 pb-24">
+            <div className="max-w-4xl mx-auto px-6 pb-24">
                 <div className="h-px bg-white/6 mb-16" />
                 <Link
                     href={`/work/${projectId}`}
