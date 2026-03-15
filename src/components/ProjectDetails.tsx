@@ -162,14 +162,14 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
 
 
             {/* Main Content Area */}
-            <div className="max-w-5xl mx-auto px-6 md:px-12 py-24 pb-48">
+            <div className="max-w-5xl mx-auto px-6 md:px-12 py-32 pb-60">
                 {/* Metrics Grid */}
                 {project.metrics && project.metrics.length > 0 && (
                     <motion.section
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true, margin: "-100px" }}
-                        className="mb-32 grid grid-cols-2 lg:grid-cols-4 gap-6"
+                        className="mb-24 grid grid-cols-2 lg:grid-cols-4 gap-6"
                     >
                         {project.metrics.map((metric, i) => (
                             <motion.div
@@ -191,73 +191,74 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                     </motion.section>
                 )}
 
-                {/* Case Study Content Wrapper */}
-                <div className="flex flex-col lg:flex-row gap-20">
-                    <div className="flex-1">
-                        {/* Rich Text Content */}
-                        <motion.section
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: "-100px" }}
-                            transition={{ duration: 0.8 }}
-                            className="prose prose-invert prose-lg md:prose-xl max-w-none mb-32 prose-headings:font-heading prose-headings:font-bold prose-headings:text-white text-neutral-300/90 prose-p:leading-[1.8] prose-a:text-blue-400 hover:prose-a:text-blue-300 prose-img:rounded-3xl prose-img:shadow-2xl prose-h2:mt-20"
-                        >
+                {/* Rich Text Content — narrow reading column */}
+                {content && (
+                    <motion.section
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.8 }}
+                        className="mb-32"
+                    >
+                        <div className="max-w-2xl mx-auto prose-reading">
                             <div dangerouslySetInnerHTML={{ __html: content }} />
-                        </motion.section>
+                        </div>
+                    </motion.section>
+                )}
 
-                        {/* Case Studies */}
-                        {caseStudies.length > 0 && (
-                            <motion.section
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: "-100px" }}
-                                transition={{ duration: 0.8 }}
-                            >
-                                <div className="flex items-center justify-between mb-16">
-                                    <h2 className="font-heading text-3xl md:text-4xl font-bold text-white">Deep Dives</h2>
-                                    <div className="h-px flex-1 bg-white/5 mx-8 hidden md:block" />
-                                </div>
-                                
-                                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                                    {caseStudies.map((study, i) => (
-                                        <Link key={study.slug} href={`/work/${project.id}/${study.slug}`}>
-                                            <motion.div
-                                                initial={{ opacity: 0, y: 20 }}
-                                                whileInView={{ opacity: 1, y: 0 }}
-                                                viewport={{ once: true }}
-                                                transition={{ delay: i * 0.1 }}
-                                                className="group cursor-pointer rounded-[32px] border border-white/5 bg-white/[0.03] p-5 transition-all duration-700 hover:border-white/20 hover:bg-white/[0.06] hover:-translate-y-2"
-                                            >
-                                                <div className="aspect-[16/10] w-full rounded-2xl bg-neutral-900 mb-8 overflow-hidden relative shadow-2xl">
-                                                    {study.coverImage ? (
-                                                        <img 
-                                                            src={study.coverImage} 
-                                                            alt={study.title} 
-                                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" 
-                                                        />
-                                                    ) : (
-                                                        <div className="absolute inset-0 bg-gradient-to-br from-neutral-800 to-black" />
-                                                    )}
-                                                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700" />
+                {/* Case Studies */}
+                {caseStudies.length > 0 && (
+                    <motion.section
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.8 }}
+                        className="mt-8"
+                    >
+                        <div className="flex items-center justify-between mb-12">
+                            <h2 className="font-heading text-3xl md:text-4xl font-bold text-white">Deep Dives</h2>
+                            <div className="h-px flex-1 bg-white/5 mx-8 hidden md:block" />
+                        </div>
+                        
+                        <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
+                            {caseStudies.map((study, i) => (
+                                <Link key={study.slug} href={`/work/${project.id}/${study.slug}`}>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: i * 0.1 }}
+                                        className="group cursor-pointer rounded-[32px] border border-white/5 bg-white/[0.03] p-5 transition-all duration-700 hover:border-white/20 hover:bg-white/[0.06] hover:-translate-y-2"
+                                    >
+                                        <div className="aspect-[16/10] w-full rounded-2xl bg-neutral-900 mb-8 overflow-hidden relative shadow-2xl">
+                                            {study.coverImage ? (
+                                                <img 
+                                                    src={study.coverImage} 
+                                                    alt={study.title} 
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" 
+                                                />
+                                            ) : (
+                                                <div className="absolute inset-0 bg-gradient-to-br from-neutral-800 to-black" />
+                                            )}
+                                            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700" />
+                                        </div>
+                                        
+                                        <div className="px-3 pb-3">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <h3 className="text-2xl font-bold text-white group-hover:text-white transition-colors leading-tight">{study.title}</h3>
+                                                <div className="rounded-full bg-white/5 p-2.5 border border-white/5 group-hover:bg-white group-hover:text-black transition-all duration-500">
+                                                    <ArrowRight className="h-4 w-4 -rotate-45 group-hover:rotate-0" />
                                                 </div>
-                                                
-                                                <div className="px-3 pb-3">
-                                                    <div className="flex justify-between items-start mb-4">
-                                                        <h3 className="text-2xl font-bold text-white group-hover:text-white transition-colors leading-tight">{study.title}</h3>
-                                                        <div className="rounded-full bg-white/5 p-2.5 border border-white/5 group-hover:bg-white group-hover:text-black transition-all duration-500">
-                                                            <ArrowRight className="h-4 w-4 -rotate-45 group-hover:rotate-0" />
-                                                        </div>
-                                                    </div>
-                                                    <p className="text-neutral-400 text-base line-clamp-2 leading-relaxed">{study.description}</p>
-                                                </div>
-                                            </motion.div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </motion.section>
-                        )}
-                    </div>
-                </div>
+                                            </div>
+                                            <p className="text-neutral-400 text-base line-clamp-2 leading-relaxed">{study.description}</p>
+                                        </div>
+                                    </motion.div>
+                                </Link>
+                            ))}
+                        </div>
+                    </motion.section>
+                )}
+
 
                 {/* Continue to Next Project */}
                 {nextProject && (
