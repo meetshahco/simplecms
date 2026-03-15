@@ -4,7 +4,8 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, Play, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
 import type { Project, CaseStudy } from "@/lib/cms/storage";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface ProjectDetailsProps {
     project: Project;
@@ -33,6 +34,11 @@ function AnimatedNumber({ value }: { value: string }) {
 }
 
 export function ProjectDetails({ project, content, caseStudies, nextProject }: ProjectDetailsProps) {
+    const searchParams = useSearchParams();
+    const from = searchParams.get("from");
+    const backHref = from === "home" ? "/" : "/work";
+    const backLabel = from === "home" ? "Home" : "Work";
+
     const { scrollY } = useScroll();
     const [isScrolled, setIsScrolled] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -63,9 +69,9 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                 className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 border-b border-white/0 transition-all duration-500"
             >
                 <div className="flex items-center gap-8">
-                    <Link href="/work" className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors group">
+                    <Link href={backHref} className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors group">
                         <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-                        <span className="text-sm font-medium tracking-wide">Work</span>
+                        <span className="text-sm font-medium tracking-wide">{backLabel}</span>
                     </Link>
                     
                     <motion.div 

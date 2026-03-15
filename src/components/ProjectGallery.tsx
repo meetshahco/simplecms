@@ -2,7 +2,7 @@
 import { ArrowRight, Layers, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ProjectCard } from "./ProjectCard";
+import { ProjectCard_Work } from "./ProjectCard_Work";
 import type { Project } from "@/lib/cms/storage";
 
 export function ProjectGallery({ projects }: { projects: Project[] }) {
@@ -59,7 +59,7 @@ export function ProjectGallery({ projects }: { projects: Project[] }) {
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1, duration: 0.5 }}
                         >
-                            <ProjectCard project={project} />
+                            <ProjectCard_Work project={project} />
                         </motion.div>
                     ))}
                 </div>

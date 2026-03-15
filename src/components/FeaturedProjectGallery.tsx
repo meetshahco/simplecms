@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FeaturedProjectCard } from "./FeaturedProjectCard";
+import { ProjectCard_Home } from "./ProjectCard_Home";
 import type { Project } from "@/lib/cms/storage";
 
 export function FeaturedProjectGallery({ projects }: { projects: Project[] }) {
@@ -44,7 +44,7 @@ export function FeaturedProjectGallery({ projects }: { projects: Project[] }) {
                                     delay: index * 0.05
                                 }}
                             >
-                                <FeaturedProjectCard
+                                <ProjectCard_Home
                                     project={project}
                                     onHoverStart={() => setHoveredId(project.id)}
                                     onHoverEnd={() => setHoveredId(null)}

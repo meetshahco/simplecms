@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Project } from "@/lib/cms/storage";
 import { cn } from "@/lib/utils";
 
-export function ProjectCard({ project }: { project: Project }) {
+export function ProjectCard_Work({ project }: { project: Project }) {
     // Spotlight position
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);

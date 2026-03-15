@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { ProjectDetails } from "@/components/ProjectDetails";
 import { Footer } from "@/components/Footer";
+import { Suspense } from "react";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -33,12 +34,14 @@ export default async function ProjectPage({ params }: PageProps) {
 
     return (
         <>
-            <ProjectDetails 
-                project={project} 
-                content={content} 
-                caseStudies={publishedCaseStudies} 
-                nextProject={nextProjectToDisplay}
-            />
+            <Suspense fallback={null}>
+                <ProjectDetails 
+                    project={project} 
+                    content={content} 
+                    caseStudies={publishedCaseStudies} 
+                    nextProject={nextProjectToDisplay}
+                />
+            </Suspense>
             <Footer />
         </>
     );
