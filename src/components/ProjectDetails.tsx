@@ -59,14 +59,15 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
     const embedUrl = isLoom ? project.video.replace("loom.com/share/", "loom.com/embed/") + "?autoplay=1&muted=1&preload=1&hide_owner=true&hide_share=true&hide_title=true&hide_embed_code=true" : null;
 
     return (
-        <div className="min-h-screen w-full bg-[#050505] text-white">
+        <div className="min-h-screen w-full bg-black text-white">
             {/* Adaptive Navigation Bar */}
             <motion.nav
                 style={{
-                    backgroundColor: `rgba(0, 0, 0, ${isScrolled ? 0.5 : 0})`,
-                    backdropFilter: `blur(${isScrolled ? 12 : 0}px)`,
+                    backgroundColor: useTransform(navbarOpacity, (o) => `rgba(0, 0, 0, ${o * 0.85})`),
+                    backdropFilter: useTransform(navbarBlur, (b) => `blur(${b}px)`),
+                    borderBottom: useTransform(navbarOpacity, (o) => `1px solid rgba(255,255,255,${o * 0.06})`),
                 }}
-                className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 border-b border-white/0 transition-all duration-500"
+                className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 border-b border-white/0"
             >
                 <div className="flex items-center gap-8">
                     <Link href={backHref} className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors group">
@@ -97,9 +98,9 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                         </div>
                     )}
                     {/* Multi-layered Cinematic Scrims for Depth & Vibrancy */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-[#050505]/80" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/40 via-transparent to-[#050505]" />
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,#050505_90%)] opacity-60" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/80" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,black_90%)] opacity-60" />
                 </div>
 
                 <div className="relative z-10 w-full max-w-5xl px-6 md:px-12 flex flex-col items-center gap-8 md:gap-16">

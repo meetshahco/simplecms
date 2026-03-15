@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 
 interface CaseStudyReaderProps {
     projectId: string;
@@ -29,7 +29,14 @@ export function CaseStudyReader({
     const [isScrolled, setIsScrolled] = useState(false);
     const articleRef = useRef<HTMLElement>(null);
 
+    const { scrollY } = useScroll();
     const { scrollYProgress } = useScroll();
+    
+    // Smooth navigation transforms
+    const navBgOpacity = useTransform(scrollY, [0, 50], [0, 0.85]);
+    const navBlur = useTransform(scrollY, [0, 50], [0, 16]);
+    const navBorderOpacity = useTransform(scrollY, [0, 50], [0, 0.06]);
+
     const scaleX = useSpring(scrollYProgress, {
         stiffness: 200,
         damping: 40,
@@ -37,14 +44,14 @@ export function CaseStudyReader({
     });
 
     useEffect(() => {
-        const unsub = scrollYProgress.on("change", (v) => setIsScrolled(v > 0.02));
+        const unsub = scrollY.on("change", (latest) => setIsScrolled(latest > 50));
         return unsub;
-    }, [scrollYProgress]);
+    }, [scrollY]);
 
 
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white">
+        <div className="min-h-screen bg-black text-white">
             {/* ── Reading progress bar ── */}
             <motion.div
                 className="fixed top-0 left-0 right-0 h-[2px] bg-white/80 origin-left z-[60]"
@@ -53,11 +60,11 @@ export function CaseStudyReader({
 
             {/* ── Sticky minimal nav ── */}
             <motion.nav
-                className="fixed top-0 left-0 right-0 z-50 flex items-center px-6 md:px-10 h-14 transition-all duration-500"
+                className="fixed top-0 left-0 right-0 z-50 flex items-center px-6 md:px-10 h-14"
                 style={{
-                    backgroundColor: isScrolled ? "rgba(5,5,5,0.85)" : "transparent",
-                    backdropFilter: isScrolled ? "blur(16px)" : "none",
-                    borderBottom: isScrolled ? "1px solid rgba(255,255,255,0.06)" : "none",
+                    backgroundColor: useTransform(navBgOpacity, (o) => `rgba(0,0,0,${o})`),
+                    backdropFilter: useTransform(navBlur, (b) => `blur(${b}px)`),
+                    borderBottom: useTransform(navBorderOpacity, (o) => `1px solid rgba(255,255,255,${o})`),
                 }}
             >
                 <Link
@@ -69,11 +76,26 @@ export function CaseStudyReader({
                 </Link>
             </motion.nav>
 
-            {/* ── Cover image ── */}
+            {/* ── Header (Title & Description) ── */}
+            <section className="px-6 md:px-12 pt-24 pb-8">
+                <div className="max-w-5xl mx-auto">
+                    <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] text-white mb-8">
+                        {title}
+                    </h1>
+
+                    {description && (
+                        <p className="text-xl md:text-2xl text-neutral-400 leading-relaxed max-w-3xl">
+                            {description}
+                        </p>
+                    )}
+                </div>
+            </section>
+
+            {/* ── Cover Image (Theater) ── */}
             {coverImage && (
-                <section className="px-6 md:px-12 mt-32">
+                <section className="px-6 md:px-12 py-12">
                     <div className="max-w-5xl mx-auto">
-                        <div className="relative aspect-video w-full overflow-hidden rounded-[32px] md:rounded-[48px] bg-neutral-900 border border-white/10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]">
+                        <div className="relative aspect-video w-full overflow-hidden rounded-[32px] md:rounded-[48px] bg-black border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]">
                             <img
                                 src={coverImage}
                                 alt={title}
@@ -84,36 +106,10 @@ export function CaseStudyReader({
                 </section>
             )}
 
-            {/* ── Header ── */}
-            <section className={`px-6 md:px-12 ${coverImage ? "pt-16" : "pt-28"} pb-16`}>
-                <div className="max-w-5xl mx-auto">
-                    {/* Back link (above fold, visible before scrolling) */}
-                    {!coverImage && (
-                        <Link
-                            href={`/work/${projectId}`}
-                            className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors text-sm mb-10 group"
-                        >
-                            <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-1 transition-transform" />
-                            {projectName}
-                        </Link>
-                    )}
-
-                    <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1] text-white mb-8">
-                        {title}
-                    </h1>
-
-                    {description && (
-                        <p className="text-xl md:text-2xl text-neutral-400 leading-relaxed max-w-3xl mb-10">
-                            {description}
-                        </p>
-                    )}
-
-
-
-                    {/* Divider */}
-                    <div className="mt-12 h-px bg-white/10" />
-                </div>
-            </section>
+            {/* ── Horizontal Divider ── */}
+            <div className="max-w-5xl mx-auto px-6 md:px-12">
+                <div className="h-px bg-white/10" />
+            </div>
 
             {/* ── Article body ── */}
             <section className="px-6 md:px-12 pb-32">
