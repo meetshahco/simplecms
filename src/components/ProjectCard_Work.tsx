@@ -97,6 +97,7 @@ export function ProjectCard_Work({ project }: { project: Project }) {
                             src={project.image}
                             alt={project.title}
                             fill
+                            unoptimized={project.image.toLowerCase().endsWith('.gif')}
                             className="object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                     ) : (

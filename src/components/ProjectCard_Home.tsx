@@ -223,6 +223,7 @@ export function ProjectCard_Home({ project, onHoverStart, onHoverEnd, isHovered 
                             src={project.image}
                             alt={project.title}
                             fill
+                            unoptimized={project.image.toLowerCase().endsWith('.gif')}
                             className={cn(
                                 "object-cover object-center transition-opacity duration-700 ease-out",
                                 isFocused ? "opacity-0" : "opacity-100"
@@ -274,6 +275,7 @@ export function ProjectCard_Home({ project, onHoverStart, onHoverEnd, isHovered 
                                     src={project.image || ""}
                                     alt={project.title}
                                     fill
+                                    unoptimized={(project.image || "").toLowerCase().endsWith('.gif')}
                                     className="object-cover object-center"
                                 />
                             )}
