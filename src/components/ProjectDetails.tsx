@@ -200,7 +200,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                         transition={{ duration: 0.8 }}
                         className="mb-32"
                     >
-                        <div className="max-w-5xl mx-auto prose prose-invert prose-lg max-w-none prose-reading prose-headings:font-heading prose-headings:font-bold prose-headings:text-white prose-a:text-white prose-a:underline prose-img:rounded-2xl">
+                        <div className="max-w-5xl mx-auto prose prose-invert prose-lg md:prose-xl max-w-none prose-reading prose-headings:font-heading prose-headings:font-bold prose-headings:text-white prose-a:text-white prose-a:underline prose-img:rounded-3xl">
                             <div dangerouslySetInnerHTML={{ __html: content }} />
                         </div>
                     </motion.section>
