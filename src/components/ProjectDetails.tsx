@@ -162,7 +162,9 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
 
 
             {/* Main Content Area */}
-            <div className="max-w-5xl mx-auto px-6 md:px-12 py-32 pb-60">
+            <section className="px-6 md:px-12 py-32 pb-60">
+                <div className="max-w-5xl mx-auto relative">
+
                 {/* Metrics Grid */}
                 {project.metrics && project.metrics.length > 0 && (
                     <motion.section
@@ -200,8 +202,10 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                         transition={{ duration: 0.8 }}
                         className="mb-32"
                     >
-                        <div className="max-w-5xl mx-auto prose prose-invert prose-lg md:prose-xl max-w-none prose-reading prose-headings:font-heading prose-headings:font-bold prose-headings:text-white prose-a:text-white prose-a:underline prose-img:rounded-3xl">
-                            <div dangerouslySetInnerHTML={{ __html: content }} />
+                        <div className="max-w-5xl mx-auto">
+                            <div className="prose prose-invert prose-lg md:prose-xl max-w-none prose-reading prose-headings:font-heading prose-headings:font-bold prose-headings:text-white prose-a:text-white prose-a:underline prose-img:rounded-3xl">
+                                <div dangerouslySetInnerHTML={{ __html: content }} />
+                            </div>
                         </div>
                     </motion.section>
                 )}
@@ -285,7 +289,8 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                         </div>
                     </motion.section>
                 )}
-            </div>
+                </div>
+            </section>
         </div>
 
     );
