@@ -16,9 +16,9 @@ export function WorkClient({ projects }: { projects: Project[] }) {
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
                 <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
 
-                <div className="w-full max-w-screen-2xl relative z-10 flex flex-col items-center mt-24">
+                <div className="w-full max-w-screen-2xl relative z-10 flex flex-col items-center mt-8">
                     {/* Projects Grid directly starts here */}
-                    <div className="w-full mt-12 md:mt-24">
+                    <div className="w-full mt-4">
                         <ProjectGallery projects={projects} />
                     </div>
                 </div>
