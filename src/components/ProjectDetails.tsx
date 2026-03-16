@@ -39,15 +39,21 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
     const backHref = from === "home" ? "/" : "/work";
     const backLabel = from === "home" ? "Home" : "Work";
 
-    const { scrollY } = useScroll();
+    const { scrollY, scrollYProgress } = useScroll();
     const [isScrolled, setIsScrolled] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    // Navbar transition threshold
-    const navbarOpacity = useTransform(scrollY, [0, 100], [0, 1]);
-    const navbarBlur = useTransform(scrollY, [0, 100], [0, 10]);
+    // Navbar transition threshold - aligned with CaseStudyReader [0, 50]
+    const navbarOpacity = useTransform(scrollY, [0, 50], [0, 1]);
+    const navbarBlur = useTransform(scrollY, [0, 50], [0, 16]);
     const titleOpacity = useTransform(scrollY, [300, 400], [0, 1]);
     const titleY = useTransform(scrollY, [300, 400], [10, 0]);
+
+    const scaleX = useSpring(scrollYProgress, {
+        stiffness: 200,
+        damping: 40,
+        restDelta: 0.001,
+    });
 
     useEffect(() => {
         return scrollY.on("change", (latest) => {
@@ -60,6 +66,12 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
 
     return (
         <div className="min-h-screen w-full bg-black text-white">
+            {/* ── Reading progress bar ── */}
+            <motion.div
+                className="fixed top-0 left-0 right-0 h-[2px] bg-white/80 origin-left z-[60]"
+                style={{ scaleX }}
+            />
+
             {/* Adaptive Navigation Bar */}
             <motion.nav
                 style={{
