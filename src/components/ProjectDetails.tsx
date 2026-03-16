@@ -115,14 +115,14 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,black_90%)] opacity-60" />
                 </div>
 
-                <div className="relative z-10 w-full max-w-5xl px-6 md:px-12 flex flex-col items-center gap-8 md:gap-16">
+                <div className="relative z-10 w-full max-w-5xl flex flex-col items-start gap-8 md:gap-16 px-6 md:px-0">
                     {/* Meta Section - Moved above Theater for better vertical flow and description visibility */}
-                    <div className="w-full text-center max-w-4xl order-1">
+                    <div className="w-full text-left order-1">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.2 }}
-                            className="flex flex-col items-center gap-6"
+                            className="flex flex-col items-start gap-6"
                         >
                             <span className="px-5 py-2 rounded-full border border-white/10 bg-white/5 text-[10px] uppercase tracking-[0.25em] text-white/70 font-bold backdrop-blur-xl">
                                 {project.category}
@@ -133,7 +133,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                             </h1>
                             
                             {project.description && (
-                                <p className="text-lg md:text-2xl text-neutral-300 leading-relaxed max-w-3xl mx-auto opacity-90 font-medium">
+                                <p className="text-lg md:text-2xl text-neutral-300 leading-relaxed max-w-4xl opacity-90 font-medium">
                                     {project.description}
                                 </p>
                             )}
