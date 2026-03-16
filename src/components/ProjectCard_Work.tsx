@@ -53,7 +53,7 @@ export function ProjectCard_Work({ project }: { project: Project }) {
                     transformPerspective: 1200,
                 }}
                 className={cn(
-                    "group relative w-full cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-neutral-900 transition-colors hover:border-white/20",
+                    "group relative w-full cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-neutral-900 transition-all duration-500 hover:border-white/30 hover:shadow-[0_0_40px_rgba(255,255,255,0.05)]",
                     "flex flex-col md:grid md:grid-cols-2 md:aspect-[32/9]" // Unified aspect ratio for perfect alignment
                 )}
             >

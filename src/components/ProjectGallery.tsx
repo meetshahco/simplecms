@@ -54,13 +54,13 @@ export function ProjectGallery({ projects }: { projects: Project[] }) {
                     {projects.map((project, index) => (
                         <motion.div
                             key={project.id}
-                            initial={{ opacity: 0, y: 60, scale: 0.96 }}
-                            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                            viewport={{ once: true, margin: "-100px" }}
+                            initial={{ opacity: 0, y: 100, filter: "blur(20px)" }}
+                            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                            viewport={{ once: true, margin: "-10%" }}
                             transition={{ 
                                 duration: 1.2, 
-                                ease: [0.16, 1, 0.3, 1], // Custom cinematic easing
-                                delay: Math.min(index * 0.1, 0.4) // Cap delay so deep scrolling doesn't wait long
+                                ease: [0.22, 1, 0.36, 1], // smooth, cinematic ease-out
+                                delay: Math.min(index * 0.15, 0.6) 
                             }}
                             className="w-full transform-gpu"
                         >
