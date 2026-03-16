@@ -64,12 +64,6 @@ export function ProjectCard_Work({ project, index }: { project: Project, index: 
         [0.5, 1, 1, 0.5]
     );
 
-    const blur = useTransform(
-        scrollYProgress,
-        [0, 0.2, 0.8, 1], // Unblurs quickly, stays unblurred, then blurs late
-        ["blur(8px)", "blur(0px)", "blur(0px)", "blur(8px)"]
-    );
-    
     // Y parallax to make the scrolling feel smoother
     const yParallax = useTransform(
         scrollYProgress,
@@ -88,7 +82,6 @@ export function ProjectCard_Work({ project, index }: { project: Project, index: 
                     rotateY,
                     scale,
                     opacity,
-                    filter: blur,
                     y: yParallax,
                     transformPerspective: 1200,
                 }}
