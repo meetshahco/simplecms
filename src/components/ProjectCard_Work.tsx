@@ -111,7 +111,7 @@ export function ProjectCard_Work({ project }: { project: Project }) {
                 <div className="relative flex flex-col justify-between p-6 md:p-8">
                     <div>
                         <h3 className="font-heading text-3xl font-bold text-white">{project.title}</h3>
-                        <p className="mt-3 text-neutral-400 leading-relaxed">{project.description}</p>
+                        <p className="mt-3 text-neutral-400 leading-relaxed line-clamp-3">{project.description}</p>
 
                         <div className="mt-6 flex flex-wrap gap-2">
                             {project.tags.map((tag) => (
