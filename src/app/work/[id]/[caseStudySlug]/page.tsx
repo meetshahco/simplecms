@@ -2,7 +2,7 @@ import { Suspense } from "react";
 export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { getCaseStudy, getCaseStudyContent, getProject, listCaseStudies } from "@/lib/cms/storage";
-import { Footer } from "@/components/Footer";
+import { FooterMinimal } from "@/components/Footer";
 import { CaseStudyReader } from "@/components/CaseStudyReader";
 
 export default async function CaseStudyPage(props: {
@@ -42,7 +42,7 @@ export default async function CaseStudyPage(props: {
                     nextCaseStudy={nextCaseStudy ? { slug: nextCaseStudy.slug, title: nextCaseStudy.title } : undefined}
                 />
             </Suspense>
-            <Footer />
+            <FooterMinimal />
         </>
     );
 }

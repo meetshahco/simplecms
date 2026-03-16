@@ -1,8 +1,12 @@
 import { getSettings } from "@/lib/cms/storage";
 import { FooterClient } from "./FooterClient";
 
-export async function Footer() {
+export async function FooterMain() {
     const settings = await getSettings();
+    return <FooterClient settings={settings} variant="main" />;
+}
 
-    return <FooterClient settings={settings} />;
+export async function FooterMinimal() {
+    const settings = await getSettings();
+    return <FooterClient settings={settings} variant="minimal" />;
 }

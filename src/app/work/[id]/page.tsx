@@ -2,7 +2,7 @@ import { getProject, getProjectContent, listCaseStudies, listProjects } from "@/
 export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { ProjectDetails } from "@/components/ProjectDetails";
-import { Footer } from "@/components/Footer";
+import { FooterMinimal } from "@/components/Footer";
 import { Suspense } from "react";
 
 interface PageProps {
@@ -42,7 +42,7 @@ export default async function ProjectPage({ params }: PageProps) {
                     nextProject={nextProjectToDisplay}
                 />
             </Suspense>
-            <Footer />
+            <FooterMinimal />
         </>
     );
 }

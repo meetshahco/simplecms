@@ -7,7 +7,7 @@ import { FeaturedProjectGallery } from "@/components/FeaturedProjectGallery";
 import { GlobalLoader } from "@/components/GlobalLoader";
 import { HomeContainer } from "@/components/HomeContainer";
 import { AboutMe } from "@/components/AboutMe";
-import { Footer } from "@/components/Footer";
+import { FooterMain } from "@/components/Footer";
 import { ContactAnimationProvider } from "@/context/ContactAnimationContext";
 import { PlaneOverlay } from "@/components/PlaneOverlay";
 import { listProjects, getSettings } from "@/lib/cms/storage";
@@ -30,7 +30,7 @@ export default async function Home() {
         <Hero />
         <FeaturedProjectGallery projects={featuredProjects} />
         <AboutMe />
-        <Footer />
+        <FooterMain />
       </HomeContainer>
     </ContactAnimationProvider>
   );

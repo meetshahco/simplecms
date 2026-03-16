@@ -2,7 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { ContactAnimationProvider } from "@/context/ContactAnimationContext";
 import { getSettings } from "@/lib/cms/storage";
 import { ContactClient } from "./ContactClient";
-import { Footer } from "@/components/Footer";
+import { FooterMain } from "@/components/Footer";
 
 export default async function ContactPage() {
     const settings = await getSettings();
@@ -18,7 +18,7 @@ export default async function ContactPage() {
 
                 <ContactClient settings={settings} />
             </main>
-            <Footer />
+            <FooterMain />
         </ContactAnimationProvider>
     );
 }

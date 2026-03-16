@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { ContactAnimationProvider } from "@/context/ContactAnimationContext";
 import { getSettings } from "@/lib/cms/storage";
 import { AboutClient } from "./AboutClient";
-import { Footer } from "@/components/Footer";
+import { FooterMain } from "@/components/Footer";
 
 export default async function AboutPage() {
     const settings = await getSettings();
@@ -19,7 +19,7 @@ export default async function AboutPage() {
 
                 <AboutClient />
             </main>
-            <Footer />
+            <FooterMain />
         </ContactAnimationProvider>
     );
 }

@@ -53,7 +53,7 @@ function GoogleAntigravityLogo({ className }: { className?: string }) {
     );
 }
 
-export function FooterClient({ settings }: { settings: Settings }) {
+export function FooterClient({ settings, variant = "main" }: { settings: Settings, variant?: "main" | "minimal" }) {
     const quotes = [
         "Code is the logic; Story is the craft.",
         "Human Intelligence > Artificial Outputs",
@@ -67,6 +67,8 @@ export function FooterClient({ settings }: { settings: Settings }) {
     const [isTyping, setIsTyping] = useState(true);
 
     useEffect(() => {
+        if (variant === "minimal") return;
+
         let timeout: NodeJS.Timeout;
         const currentFullQuote = quotes[currentQuoteIndex];
 
@@ -90,36 +92,40 @@ export function FooterClient({ settings }: { settings: Settings }) {
         }
 
         return () => clearTimeout(timeout);
-    }, [displayQuote, isTyping, currentQuoteIndex, quotes]);
+    }, [displayQuote, isTyping, currentQuoteIndex, quotes, variant]);
 
     return (
-        <footer className="w-full bg-neutral-950/50 border-t border-white/5 pt-16 pb-8 px-6 sm:px-12 flex flex-col items-center justify-center relative overflow-hidden mt-12">
+        <footer className={`w-full bg-neutral-950/50 border-t border-white/5 pb-8 px-6 sm:px-12 flex flex-col items-center justify-center relative overflow-hidden ${variant === 'main' ? 'pt-16 mt-12' : 'pt-12'}`}>
             {/* Top quote section */}
-            <div className="max-w-4xl mx-auto flex flex-col items-center text-center space-y-4 z-10 min-h-[120px] sm:min-h-[100px]">
-                <div className="text-lg sm:text-xl md:text-2xl font-mono text-neutral-400 font-medium tracking-tight flex items-center flex-wrap justify-center min-h-[3rem]">
-                    <span className="opacity-50 mr-2 sm:mr-4 text-green-500/70 shrink-0">{">_"}</span>
-                    <span className="relative">
-                        {displayQuote}
-                        <motion.span
-                            animate={{ opacity: [0, 1, 0] }}
-                            transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
-                            className="inline-block w-2 sm:w-2.5 h-5 sm:h-6 md:h-7 bg-green-500/70 align-middle ml-1"
-                        />
-                    </span>
-                </div>
+            {variant === "main" && (
+                <div className="max-w-4xl mx-auto flex flex-col items-center text-center space-y-4 z-10 min-h-[120px] sm:min-h-[100px]">
+                    <div className="text-lg sm:text-xl md:text-2xl font-mono text-neutral-400 font-medium tracking-tight flex items-center flex-wrap justify-center min-h-[3rem]">
+                        <span className="opacity-50 mr-2 sm:mr-4 text-green-500/70 shrink-0">{">_"}</span>
+                        <span className="relative">
+                            {displayQuote}
+                            <motion.span
+                                animate={{ opacity: [0, 1, 0] }}
+                                transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
+                                className="inline-block w-2 sm:w-2.5 h-5 sm:h-6 md:h-7 bg-green-500/70 align-middle ml-1"
+                            />
+                        </span>
+                    </div>
 
-                {/* Digital Signature */}
-                <div className="font-mono text-[10px] sm:text-xs md:text-sm flex items-center gap-2 sm:gap-3">
-                    <span className="text-neutral-700">---</span>
-                    <span className="uppercase text-neutral-500 tracking-widest bg-neutral-900 px-2 sm:px-3 py-1 rounded border border-white/5">
-                        [SYS.AUTH: 0xMEET]
-                    </span>
-                    <span className="text-neutral-700">---</span>
+                    {/* Digital Signature */}
+                    <div className="font-mono text-[10px] sm:text-xs md:text-sm flex items-center gap-2 sm:gap-3">
+                        <span className="text-neutral-700">---</span>
+                        <span className="uppercase text-neutral-500 tracking-widest bg-neutral-900 px-2 sm:px-3 py-1 rounded border border-white/5">
+                            [SYS.AUTH: 0xMEET]
+                        </span>
+                        <span className="text-neutral-700">---</span>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Divider */}
-            <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-10" />
+            {variant === "main" && (
+                <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-10" />
+            )}
 
             {/* Middle Section: Logo (Desktop), Socials, CTA */}
             <div className="w-full flex flex-col md:grid md:grid-cols-3 items-center gap-8 md:gap-0 z-10">
