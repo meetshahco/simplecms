@@ -292,10 +292,9 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                                 <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold text-white mb-12 tracking-tight transition-all duration-700 hover:scale-[1.02] group-hover:text-white/70 leading-[1.1]">
                                     {nextProject.title}
                                 </h1>
-                                <div className="flex items-center justify-center gap-4 text-white font-bold group">
-                                    <span className="text-lg tracking-wider group-hover:translate-x-2 transition-transform duration-500">Read Project Case Study</span>
-                                    <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-black group-hover:scale-110 transition-all duration-500">
-                                        <ArrowRight className="w-6 h-6" />
+                                <div className="flex items-center justify-center text-white group">
+                                    <div className="w-16 h-16 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-black group-hover:scale-110 transition-all duration-500">
+                                        <ArrowRight className="w-8 h-8" />
                                     </div>
                                 </div>
                             </Link>
