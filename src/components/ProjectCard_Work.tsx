@@ -1,13 +1,20 @@
 "use client";
-import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { MouseEvent } from "react";
+import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
+import { useRef, MouseEvent } from "react";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Project } from "@/lib/cms/storage";
 import { cn } from "@/lib/utils";
 
-export function ProjectCard_Work({ project }: { project: Project }) {
+export function ProjectCard_Work({ project, index }: { project: Project, index: number }) {
+    const cardRef = useRef<HTMLDivElement>(null);
+
+    // Scroll progress specifically for this card
+    const { scrollYProgress } = useScroll({
+        target: cardRef,
+        offset: ["start end", "end start"], // Track from when it enters bottom to leaves top
+    });
     // Spotlight position
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
@@ -42,14 +49,46 @@ export function ProjectCard_Work({ project }: { project: Project }) {
         yPos.set(0);
     }
 
+    // Scroll-linked focus/defocus effect
+    // 0 = just entered bottom, 0.5 = center, 1 = leaves top
+    const scale = useTransform(
+        scrollYProgress,
+        [0, 0.4, 0.6, 1],
+        [0.85, 1, 1, 0.85]
+    );
+
+    const opacity = useTransform(
+        scrollYProgress,
+        [0, 0.3, 0.7, 1],
+        [0.3, 1, 1, 0.3]
+    );
+
+    const blur = useTransform(
+        scrollYProgress,
+        [0, 0.4, 0.6, 1],
+        ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]
+    );
+    
+    // Y parallax to make the scrolling feel smoother
+    const yParallax = useTransform(
+        scrollYProgress,
+        [0, 1],
+        [100, -100]
+    );
+
     return (
         <Link href={`/work/${project.id}`}>
             <motion.div
+                ref={cardRef}
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
                 style={{
                     rotateX,
                     rotateY,
+                    scale,
+                    opacity,
+                    filter: blur,
+                    y: yParallax,
                     transformPerspective: 1200,
                 }}
                 className={cn(

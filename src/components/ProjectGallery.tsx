@@ -52,20 +52,7 @@ export function ProjectGallery({ projects }: { projects: Project[] }) {
             <div className="mx-auto max-w-5xl">
                 <div className="grid grid-cols-1 gap-16 md:gap-32">
                     {projects.map((project, index) => (
-                        <motion.div
-                            key={project.id}
-                            initial={{ opacity: 0, y: 100, filter: "blur(20px)" }}
-                            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                            viewport={{ once: true, margin: "-10%" }}
-                            transition={{ 
-                                duration: 1.2, 
-                                ease: [0.22, 1, 0.36, 1], // smooth, cinematic ease-out
-                                delay: Math.min(index * 0.15, 0.6) 
-                            }}
-                            className="w-full transform-gpu"
-                        >
-                            <ProjectCard_Work project={project} />
-                        </motion.div>
+                        <ProjectCard_Work key={project.id} project={project} index={index} />
                     ))}
                 </div>
             </div>
