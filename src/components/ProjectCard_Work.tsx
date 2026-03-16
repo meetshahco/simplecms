@@ -74,8 +74,8 @@ export function ProjectCard_Work({ project }: { project: Project }) {
                 {/* Left: GIF/Video Preview */}
                 <div className="relative aspect-video md:aspect-auto md:h-full w-full overflow-hidden border-b border-white/5 md:border-b-0 md:border-r bg-neutral-800">
                     {/* Video that plays on hover - Z-index higher to sit on top of image when active */}
-                    {project.video ? (
-                        <div className="absolute inset-0 z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                    {project.video && (
+                        <div className="absolute inset-0 z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100 bg-neutral-900/40">
                             <video
                                 src={project.video}
                                 muted
@@ -84,10 +84,6 @@ export function ProjectCard_Work({ project }: { project: Project }) {
                                 autoPlay={true}
                                 className="h-full w-full object-cover scale-110 transition-transform duration-700"
                             />
-                        </div>
-                    ) : (
-                        <div className="absolute inset-0 z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100 flex items-center justify-center bg-blue-500/10">
-                            <span className="text-blue-400 text-xs font-medium uppercase tracking-widest">No Preview Video</span>
                         </div>
                     )}
 
@@ -110,7 +106,7 @@ export function ProjectCard_Work({ project }: { project: Project }) {
                 {/* Right: Details */}
                 <div className="relative flex flex-col justify-between p-6 md:p-8 md:h-full overflow-hidden">
                     <div className="flex-1 overflow-hidden">
-                        <h3 className="font-heading text-2xl lg:text-3xl font-bold text-white line-clamp-1">{project.title}</h3>
+                        <h3 className="font-heading text-2xl lg:text-3xl font-bold text-white">{project.title}</h3>
                         <p className="mt-3 text-sm md:text-base text-neutral-400 leading-relaxed line-clamp-2 md:line-clamp-3">{project.description}</p>
 
                         <div className="mt-4 flex flex-wrap gap-2">
@@ -127,8 +123,7 @@ export function ProjectCard_Work({ project }: { project: Project }) {
                         </div>
                     </div>
 
-                    <div className="mt-4 flex items-end justify-between md:justify-end">
-                        <span className="md:hidden text-xs text-neutral-500 font-medium uppercase tracking-wider">View Project</span>
+                    <div className="mt-4 flex items-end justify-end">
                         <div className="rounded-full bg-white p-2.5 text-black transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]">
                             <ArrowRight className="h-4 w-4 -rotate-45 transition-transform duration-300 group-hover:rotate-0" />
                         </div>

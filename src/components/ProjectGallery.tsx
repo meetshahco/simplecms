@@ -50,14 +50,19 @@ export function ProjectGallery({ projects }: { projects: Project[] }) {
     return (
         <section className="py-24 px-4 md:px-6">
             <div className="mx-auto max-w-5xl">
-                <div className="grid grid-cols-1 gap-8 md:gap-12">
+                <div className="grid grid-cols-1 gap-16 md:gap-32">
                     {projects.map((project, index) => (
                         <motion.div
                             key={project.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1, duration: 0.5 }}
+                            initial={{ opacity: 0, y: 60, scale: 0.96 }}
+                            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ 
+                                duration: 1.2, 
+                                ease: [0.16, 1, 0.3, 1], // Custom cinematic easing
+                                delay: Math.min(index * 0.1, 0.4) // Cap delay so deep scrolling doesn't wait long
+                            }}
+                            className="w-full transform-gpu"
                         >
                             <ProjectCard_Work project={project} />
                         </motion.div>
