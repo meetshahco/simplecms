@@ -54,7 +54,7 @@ export function ProjectCard_Work({ project }: { project: Project }) {
                 }}
                 className={cn(
                     "group relative w-full cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-neutral-900 transition-colors hover:border-white/20",
-                    "flex flex-col md:grid md:grid-cols-2" // Responsive layout
+                    "flex flex-col md:grid md:grid-cols-2 md:aspect-[32/9]" // Unified aspect ratio for perfect alignment
                 )}
             >
                 {/* Ambient Glow */}
@@ -72,7 +72,7 @@ export function ProjectCard_Work({ project }: { project: Project }) {
                 />
 
                 {/* Left: GIF/Video Preview */}
-                <div className="relative aspect-video w-full overflow-hidden border-b border-white/5 md:border-b-0 md:border-r bg-neutral-800">
+                <div className="relative aspect-video md:aspect-auto md:h-full w-full overflow-hidden border-b border-white/5 md:border-b-0 md:border-r bg-neutral-800">
                     {/* Video that plays on hover - Z-index higher to sit on top of image when active */}
                     {project.video ? (
                         <div className="absolute inset-0 z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
@@ -108,29 +108,29 @@ export function ProjectCard_Work({ project }: { project: Project }) {
                 </div>
 
                 {/* Right: Details */}
-                <div className="relative flex flex-col justify-between p-6 md:p-8">
-                    <div>
-                        <h3 className="font-heading text-3xl font-bold text-white">{project.title}</h3>
-                        <p className="mt-3 text-neutral-400 leading-relaxed line-clamp-3">{project.description}</p>
+                <div className="relative flex flex-col justify-between p-6 md:p-8 md:h-full overflow-hidden">
+                    <div className="flex-1 overflow-hidden">
+                        <h3 className="font-heading text-2xl lg:text-3xl font-bold text-white line-clamp-1">{project.title}</h3>
+                        <p className="mt-3 text-sm md:text-base text-neutral-400 leading-relaxed line-clamp-2 md:line-clamp-3">{project.description}</p>
 
-                        <div className="mt-6 flex flex-wrap gap-2">
-                            {project.tags.map((tag) => (
-                                <span key={tag} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-neutral-300">
+                        <div className="mt-4 flex flex-wrap gap-2">
+                            {project.tags.slice(0, 3).map((tag) => (
+                                <span key={tag} className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-neutral-300">
                                     {tag}
                                 </span>
                             ))}
-                            {project.caseStudyCount !== undefined && (
-                                <span className="rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-sm text-blue-400 font-medium">
+                            {project.caseStudyCount !== undefined && project.caseStudyCount > 0 && (
+                                <span className="rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-1 text-xs text-blue-400 font-medium">
                                     {project.caseStudyCount} Case Studies
                                 </span>
                             )}
                         </div>
                     </div>
 
-                    <div className="mt-8 flex items-end justify-between md:justify-end">
-                        <span className="md:hidden text-sm text-neutral-500">View Project</span>
-                        <div className="rounded-full bg-white p-3 text-black transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                            <ArrowRight className="h-5 w-5 -rotate-45 transition-transform duration-300 group-hover:rotate-0" />
+                    <div className="mt-4 flex items-end justify-between md:justify-end">
+                        <span className="md:hidden text-xs text-neutral-500 font-medium uppercase tracking-wider">View Project</span>
+                        <div className="rounded-full bg-white p-2.5 text-black transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                            <ArrowRight className="h-4 w-4 -rotate-45 transition-transform duration-300 group-hover:rotate-0" />
                         </div>
                     </div>
                 </div>
