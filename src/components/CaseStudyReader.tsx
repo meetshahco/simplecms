@@ -13,6 +13,8 @@ interface CaseStudyReaderProps {
     coverImage?: string;
     publishedAt?: string;
     content: string;
+    prevCaseStudy?: { slug: string; title: string };
+    nextCaseStudy?: { slug: string; title: string };
 }
 
 
@@ -25,6 +27,8 @@ export function CaseStudyReader({
     coverImage,
     publishedAt,
     content,
+    prevCaseStudy,
+    nextCaseStudy,
 }: CaseStudyReaderProps) {
     const [isScrolled, setIsScrolled] = useState(false);
     const articleRef = useRef<HTMLElement>(null);
@@ -122,21 +126,84 @@ export function CaseStudyReader({
                 </div>
             </section>
 
-            {/* ── Bottom CTA ── */}
-            <section className="px-6 md:px-12 pb-24">
-                <div className="max-w-5xl mx-auto">
-                    <div className="h-px bg-white/10 mb-16" />
-                    <Link
-                        href={`/work/${projectId}`}
-                        className="inline-flex items-center gap-3 text-neutral-400 hover:text-white transition-colors group"
-                    >
-                        <div className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center group-hover:border-white/30 transition-colors">
-                            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
-                        </div>
-                        <span className="text-sm font-medium">Back to {projectName}</span>
-                    </Link>
+            {/* ── Pagination Bar ── */}
+            <footer className="border-t border-white/10 bg-black/50 backdrop-blur-md">
+                <div className="flex items-center justify-between px-6 md:px-10 py-16 md:py-24">
+                    {/* Previous */}
+                    <div className="flex-1 flex justify-start">
+                        {prevCaseStudy ? (
+                            <Link
+                                href={`/work/${projectId}/${prevCaseStudy.slug}`}
+                                className="group flex flex-col items-start gap-4 max-w-[200px] md:max-w-md transition-all"
+                            >
+                                <span className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-500 group-hover:text-neutral-400 transition-colors">
+                                    Previous Case Study
+                                </span>
+                                <div className="flex items-center gap-4">
+                                     <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:border-white/30 transition-all group-hover:-translate-x-1 shrink-0">
+                                        <ArrowLeft className="h-4 w-4 text-neutral-400 group-hover:text-white transition-colors" />
+                                    </div>
+                                    <span className="text-lg md:text-2xl font-medium text-white group-hover:text-white/80 transition-colors line-clamp-1">
+                                        {prevCaseStudy.title}
+                                    </span>
+                                </div>
+                            </Link>
+                        ) : (
+                            <Link
+                                href={`/work/${projectId}`}
+                                className="group flex flex-col items-start gap-4 transition-all"
+                            >
+                                <span className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-500 group-hover:text-neutral-400 transition-colors">
+                                    Project
+                                </span>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:border-white/30 transition-all group-hover:-translate-x-1">
+                                        <ArrowLeft className="h-4 w-4 text-neutral-400 group-hover:text-white transition-colors" />
+                                    </div>
+                                    <span className="text-lg md:text-xl font-medium text-white/60 group-hover:text-white transition-colors">Back to Overview</span>
+                                </div>
+                            </Link>
+                        )}
+                    </div>
+
+                    {/* Next */}
+                    <div className="flex-1 flex justify-end text-right">
+                        {nextCaseStudy ? (
+                            <Link
+                                href={`/work/${projectId}/${nextCaseStudy.slug}`}
+                                className="group flex flex-col items-end gap-4 max-w-[200px] md:max-w-md transition-all"
+                            >
+                                <span className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-500 group-hover:text-neutral-400 transition-colors">
+                                    Next Case Study
+                                </span>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-lg md:text-2xl font-medium text-white group-hover:text-white/80 transition-colors line-clamp-1">
+                                        {nextCaseStudy.title}
+                                    </span>
+                                    <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:border-white/30 transition-all group-hover:translate-x-1 shrink-0 rotate-180">
+                                        <ArrowLeft className="h-4 w-4 text-neutral-400 group-hover:text-white transition-colors" />
+                                    </div>
+                                </div>
+                            </Link>
+                        ) : (
+                            <Link
+                                href="/work"
+                                className="group flex flex-col items-end gap-4 transition-all"
+                            >
+                                <span className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-500 group-hover:text-neutral-400 transition-colors">
+                                    Explore More
+                                </span>
+                                <div className="flex items-center gap-3">
+                                    <span className="text-lg md:text-xl font-medium text-white/60 group-hover:text-white transition-colors">Return to Work</span>
+                                    <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:border-white/30 transition-all group-hover:translate-x-1 rotate-180">
+                                        <ArrowLeft className="h-4 w-4 text-neutral-400 group-hover:text-white transition-colors" />
+                                    </div>
+                                </div>
+                            </Link>
+                        )}
+                    </div>
                 </div>
-            </section>
+            </footer>
 
         </div>
     );
