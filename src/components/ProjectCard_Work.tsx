@@ -51,25 +51,31 @@ export function ProjectCard_Work({ project, index }: { project: Project, index: 
 
     // Scroll-linked focus/defocus effect
     // 0 = just entered bottom, 0.5 = center, 1 = leaves top
-    // Widened the "in-focus" range so the card remains clear for much longer
-    const scale = useTransform(
+    // Fixed: Ensure cards at the top (Progress > 0.4) are always 100% focused
+    const scrollScale = useTransform(
         scrollYProgress,
-        [0, 0.15, 0.85, 1], // Becomes full size quicker, stays full size longer
-        [0.9, 1, 1, 0.9]
+        [0, 0.2, 0.4, 1], 
+        [0.9, 1, 1, 1]
     );
 
-    const opacity = useTransform(
+    const scrollOpacity = useTransform(
         scrollYProgress,
-        [0, 0.1, 0.9, 1],
-        [0.5, 1, 1, 0.5]
+        [0, 0.15, 0.3, 1],
+        [0.6, 1, 1, 1]
     );
 
     // Y parallax to make the scrolling feel smoother
-    const yParallax = useTransform(
+    const scrollYParallax = useTransform(
         scrollYProgress,
         [0, 1],
         [40, -40] // Reduced vertical movement to keep the card stable longer
     );
+
+    // Exempt the first two cards from the defocusing effect so they stay sharp at the top
+    const isFirstTwo = index < 2;
+    const scale = isFirstTwo ? 1 : scrollScale;
+    const opacity = isFirstTwo ? 1 : scrollOpacity;
+    const yParallax = isFirstTwo ? 0 : scrollYParallax;
 
     return (
         <Link href={`/work/${project.id}`}>
