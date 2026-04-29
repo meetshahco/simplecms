@@ -8,7 +8,6 @@ import { GlobalLoader } from "@/components/GlobalLoader";
 import { HomeContainer } from "@/components/HomeContainer";
 import { AboutMe } from "@/components/AboutMe";
 import { FooterMain } from "@/components/Footer";
-import { ContactAnimationProvider } from "@/context/ContactAnimationContext";
 import { PlaneOverlay } from "@/components/PlaneOverlay";
 import { listProjects, getSettings, listCaseStudies } from "@/lib/cms/storage";
 import { cookies } from "next/headers";
@@ -55,7 +54,7 @@ export default async function Home({ searchParams }: Props) {
   const comingUpNextProjects = featuredProjects.filter(p => p.id !== heroProject?.id);
 
   return (
-    <ContactAnimationProvider>
+    <>
       {!splashPlayed && <GlobalLoader />}
       <PlaneOverlay />
       <HomeContainer>
@@ -65,6 +64,6 @@ export default async function Home({ searchParams }: Props) {
         <AboutMe />
         <FooterMain />
       </HomeContainer>
-    </ContactAnimationProvider>
+    </>
   );
 }

@@ -20,8 +20,10 @@ const caveat = Caveat({
 });
 
 import { getSettings } from "@/lib/cms/storage";
+import { cookies } from "next/headers";
 
 import { Providers } from "@/components/auth/Providers";
+import { ContactAnimationProvider } from "@/context/ContactAnimationContext";
 import ClarityAnalytics from "@/components/analytics/ClarityAnalytics";
 
 export const dynamic = "force-dynamic";
@@ -45,16 +47,21 @@ export default async function RootLayout({
 }>) {
   const settings = await getSettings().catch(() => null);
 
+  const cookieStore = await cookies();
+  const splashPlayed = cookieStore.get("splashPlayed")?.value === "true";
+
   return (
     <html lang="en">
       <body
         className={`${inter.variable} ${outfit.variable} ${caveat.variable} antialiased bg-[#0a0a0a] text-foreground`}
       >
         <Providers>
-          {children}
-          <Analytics />
-          <SpeedInsights />
-          <ClarityAnalytics />
+          <ContactAnimationProvider initialContactCta={splashPlayed}>
+            {children}
+            <Analytics />
+            <SpeedInsights />
+            <ClarityAnalytics />
+          </ContactAnimationProvider>
         </Providers>
       </body>
     </html>

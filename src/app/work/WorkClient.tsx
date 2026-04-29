@@ -3,12 +3,11 @@
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/Navbar";
 import { ProjectGallery } from "@/components/ProjectGallery";
-import { ContactAnimationProvider } from "@/context/ContactAnimationContext";
 import type { Project } from "@/lib/cms/storage";
 
 export function WorkClient({ projects }: { projects: Project[] }) {
     return (
-        <ContactAnimationProvider>
+        <>
             <main className="min-h-screen bg-black text-white flex flex-col items-center pt-24 px-6 pb-6 sm:px-12 sm:pb-12 relative overflow-hidden">
                 <Navbar />
 
@@ -23,6 +22,6 @@ export function WorkClient({ projects }: { projects: Project[] }) {
                     </div>
                 </div>
             </main>
-        </ContactAnimationProvider>
+        </>
     );
 }

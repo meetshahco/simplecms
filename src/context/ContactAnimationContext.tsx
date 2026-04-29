@@ -20,9 +20,9 @@ interface ContactAnimationContextType {
 
 const ContactAnimationContext = createContext<ContactAnimationContextType | undefined>(undefined);
 
-export function ContactAnimationProvider({ children }: { children: ReactNode }) {
-    const [isContactCta, setIsContactCta] = useState(false);
-    const [isViewDeckCta, setIsViewDeckCta] = useState(false);
+export function ContactAnimationProvider({ children, initialContactCta = false }: { children: ReactNode, initialContactCta?: boolean }) {
+    const [isContactCta, setIsContactCta] = useState(initialContactCta);
+    const [isViewDeckCta, setIsViewDeckCta] = useState(initialContactCta);
     const [planePathStart, setPlanePathStart] = useState<AnimationStartData | null>(null);
     const contactRef = useRef<HTMLAnchorElement>(null);
     const viewDeckRef = useRef<HTMLAnchorElement>(null);
