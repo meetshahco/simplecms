@@ -80,12 +80,7 @@ const ROLES = [
 ];
 
 export function GlobalLoader() {
-    const [isLoading, setIsLoading] = useState(() => {
-        if (typeof window !== "undefined") {
-            return sessionStorage.getItem("splashPlayed") !== "true";
-        }
-        return true;
-    });
+    const [isLoading, setIsLoading] = useState(true);
     const [highlightIndex, setHighlightIndex] = useState(0);
     const [roleIndex, setRoleIndex] = useState(0);
     const [rects, setRects] = useState<Record<string, DOMRect>>({});
@@ -213,7 +208,7 @@ export function GlobalLoader() {
                 setTimeout(() => {
                     setSubheaderPhase("end");
                     setIsLoading(false);
-                    sessionStorage.setItem("splashPlayed", "true");
+                    document.cookie = "splashPlayed=true; path=/; max-age=86400"; // 24 hours
                 }, 800);
             }, 800);
         }
@@ -222,8 +217,7 @@ export function GlobalLoader() {
     const handleSkip = useCallback(() => {
         setWasSkipped(true);
         setIsLoading(false);
-        sessionStorage.setItem("splashSkipped", "true");
-        sessionStorage.setItem("splashPlayed", "true");
+        document.cookie = "splashPlayed=true; path=/; max-age=86400"; // 24 hours
         setIsContactCta(true);
     }, [setIsContactCta]);
 

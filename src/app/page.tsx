@@ -11,17 +11,21 @@ import { FooterMain } from "@/components/Footer";
 import { ContactAnimationProvider } from "@/context/ContactAnimationContext";
 import { PlaneOverlay } from "@/components/PlaneOverlay";
 import { listProjects, getSettings, listCaseStudies } from "@/lib/cms/storage";
+import { cookies } from "next/headers";
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export default async function Home({ searchParams }: Props) {
-  const [projects, settings, caseStudies] = await Promise.all([
+  const [projects, settings, caseStudies, cookieStore] = await Promise.all([
     listProjects(),
     getSettings(),
-    listCaseStudies()
+    listCaseStudies(),
+    cookies()
   ]);
+
+  const splashPlayed = cookieStore.get("splashPlayed")?.value === "true";
 
   // Inject case study counts
   const projectsWithCounts = projects.map(p => ({
@@ -52,7 +56,7 @@ export default async function Home({ searchParams }: Props) {
 
   return (
     <ContactAnimationProvider>
-      <GlobalLoader />
+      {!splashPlayed && <GlobalLoader />}
       <PlaneOverlay />
       <HomeContainer>
         <Navbar siteTitle={settings.siteTitle} />
