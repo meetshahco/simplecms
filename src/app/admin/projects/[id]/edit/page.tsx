@@ -50,6 +50,7 @@ interface ProjectData {
     tags: string[];
     image: string;
     video: string;
+    clientLogo?: string;
     metrics: { label: string; value: string }[];
     starred: boolean;
     status: "draft" | "published";
