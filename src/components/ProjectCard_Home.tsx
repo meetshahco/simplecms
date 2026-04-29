@@ -196,7 +196,7 @@ export function ProjectCard_Home({ project, onHoverStart, onHoverEnd, isHovered 
                 onMouseLeave={onHoverEnd}
                 className="relative w-full rounded-[40px] overflow-hidden cursor-pointer bg-neutral-900 group transform-gpu"
                 animate={{
-                    height: isFocused ? 820 : 650,
+                    height: isFocused ? 480 : 380,
                     scale: isHovered ? 1.05 : 1,
                     zIndex: isHovered ? 100 : 1,
                     boxShadow: isHovered
@@ -337,7 +337,7 @@ export function ProjectCard_Home({ project, onHoverStart, onHoverEnd, isHovered 
                                 className="font-heading font-semibold text-white leading-[1.25] tracking-tight line-clamp-3"
                                 style={{ originX: 0, originY: 1 }}
                                 animate={{
-                                    fontSize: isFocused ? "calc(1.1rem + 0.5vw)" : "calc(2.5rem + 2vw)",
+                                    fontSize: isFocused ? "calc(1rem + 0.5vw)" : "calc(1.8rem + 1vw)",
                                 }}
                                 transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
                             >

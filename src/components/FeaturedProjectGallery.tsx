@@ -10,7 +10,7 @@ export function FeaturedProjectGallery({ projects }: { projects: Project[] }) {
     if (projects.length === 0) return null;
 
     return (
-        <section className="relative overflow-visible px-6 md:px-12 py-32">
+        <section className="relative overflow-visible px-6 sm:px-10 md:px-[53px] py-16 md:py-24 w-full">
             {/* Cinematic Backdrop Overlay */}
             <AnimatePresence>
                 {hoveredId && (
@@ -26,9 +26,12 @@ export function FeaturedProjectGallery({ projects }: { projects: Project[] }) {
                 )}
             </AnimatePresence>
 
-            <div className="mx-auto max-w-5xl">
-                <div className="grid grid-cols-1 gap-32 lg:gap-40">
-                    {projects.map((project, index) => (
+            <div className="w-full">
+                <h3 className="text-xl sm:text-2xl font-bold text-white/90 mb-6 md:mb-8 font-heading tracking-tight drop-shadow-md">
+                    Coming Up Next
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+                    {projects.slice(0, 2).map((project, index) => (
                         <div key={project.id} className="relative z-0 hover:z-[100]">
                             <motion.div
                                 initial={{ opacity: 0, y: 30 }}

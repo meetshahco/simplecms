@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useContactAnimation } from "@/context/ContactAnimationContext";
@@ -49,27 +49,42 @@ function NavItem({ href, label, isActive }: { href: string; label: string; isAct
 }
 
 export function Navbar({ siteTitle = "Meet Shah" }: { siteTitle?: string }) {
-    const { isContactCta, contactRef } = useContactAnimation();
+    const { isContactCta, setIsContactCta, contactRef } = useContactAnimation();
     const pathname = usePathname();
     const [isContactHovered, setIsContactHovered] = useState(false);
 
+    // Auto-enable the Contact CTA if the splash was skipped or already played
+    useEffect(() => {
+        if (sessionStorage.getItem("splashPlayed") === "true") {
+            setIsContactCta(true);
+        }
+    }, [setIsContactCta]);
+
     return (
+        <>
         <nav className="fixed top-0 left-0 right-0 z-50 py-4 md:py-6 backdrop-blur-sm px-6 sm:px-10 md:px-[53px]">
-            <div className="flex items-center justify-between w-full">
-                {pathname !== "/" ? (
-                    <Link href="/" className="flex items-center justify-center p-2 -ml-2 text-neutral-400 hover:text-white transition-colors group">
-                        <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
-                    </Link>
-                ) : (
-                    <Link href="/" className="text-lg sm:text-xl font-bold text-white font-heading tracking-tight drop-shadow-md">
-                        {siteTitle}
-                    </Link>
-                )}
-                <div className="flex items-center gap-0 sm:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 items-center w-full">
+                {/* Left - Site Title */}
+                <div className="flex justify-start">
+                    {pathname !== "/" ? (
+                        <Link href="/" className="flex items-center justify-center p-2 -ml-2 text-neutral-400 hover:text-white transition-colors group">
+                            <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+                        </Link>
+                    ) : (
+                        <Link href="/" className="text-lg sm:text-xl font-bold text-white font-heading tracking-tight drop-shadow-md">
+                            {siteTitle}
+                        </Link>
+                    )}
+                </div>
+
+                {/* Center - Navigation Items (Desktop only) */}
+                <div className="hidden md:flex justify-center items-center gap-6">
                     <NavItem href="/work" label="Work" isActive={pathname === "/work"} />
                     <NavItem href="/about" label="About" isActive={pathname === "/about"} />
+                </div>
 
-                    {/* The Contact Link - Animates into CTA state from Hero + continuous drum hover scroll */}
+                {/* Right - Contact CTA */}
+                <div className="flex justify-end items-center">
                     <Link
                         href="/contact"
                         ref={contactRef}
@@ -144,5 +159,15 @@ export function Navbar({ siteTitle = "Meet Shah" }: { siteTitle?: string }) {
                 </div>
             </div>
         </nav>
+
+        {/* Mobile Bottom Navigation */}
+        <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+            <div className="flex items-center justify-center gap-2 bg-neutral-900/90 backdrop-blur-lg border border-white/10 rounded-full px-4 py-2 shadow-2xl">
+                <NavItem href="/work" label="Work" isActive={pathname === "/work"} />
+                <NavItem href="/about" label="About" isActive={pathname === "/about"} />
+                {/* Logic for hamburger if > 3 items can be added here later */}
+            </div>
+        </div>
+        </>
     );
 }

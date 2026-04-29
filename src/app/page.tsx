@@ -10,16 +10,45 @@ import { AboutMe } from "@/components/AboutMe";
 import { FooterMain } from "@/components/Footer";
 import { ContactAnimationProvider } from "@/context/ContactAnimationContext";
 import { PlaneOverlay } from "@/components/PlaneOverlay";
-import { listProjects, getSettings } from "@/lib/cms/storage";
+import { listProjects, getSettings, listCaseStudies } from "@/lib/cms/storage";
 
-export default async function Home() {
-  const [projects, settings] = await Promise.all([
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export default async function Home({ searchParams }: Props) {
+  const [projects, settings, caseStudies] = await Promise.all([
     listProjects(),
-    getSettings()
+    getSettings(),
+    listCaseStudies()
   ]);
 
+  // Inject case study counts
+  const projectsWithCounts = projects.map(p => ({
+    ...p,
+    caseStudyCount: caseStudies.filter(c => c.parentProject === p.id && c.status === 'published').length
+  }));
+
+  // Parse dynamic URL parameters
+  const resolvedSearchParams = await searchParams;
+  const heroParam = resolvedSearchParams?.hero as string | undefined;
+
   // Filter only published and starred projects for the homepage gallery
-  const featuredProjects = projects.filter(p => p.status === 'published' && p.starred);
+  const featuredProjects = projectsWithCounts.filter(p => p.status === 'published' && p.starred);
+
+  // Dynamic Hero Selection Logic
+  let heroProject = undefined;
+  if (heroParam) {
+    heroProject = featuredProjects.find(p => p.id === heroParam);
+  }
+  
+  // Fallback to Kwikpay by default, or the first featured project if the URL param is missing/invalid
+  if (!heroProject && featuredProjects.length > 0) {
+    heroProject = featuredProjects.find(p => p.id === "heading-country-s-first-digital-ewallet-and-payments-platform") || featuredProjects[0];
+  }
+
+  // Filter out the selected Hero project from the "Coming Up Next" gallery
+  const comingUpNextProjects = featuredProjects.filter(p => p.id !== heroProject?.id);
 
   return (
     <ContactAnimationProvider>
@@ -27,8 +56,8 @@ export default async function Home() {
       <PlaneOverlay />
       <HomeContainer>
         <Navbar siteTitle={settings.siteTitle} />
-        <Hero />
-        <FeaturedProjectGallery projects={featuredProjects} />
+        <Hero featuredProject={heroProject} />
+        <FeaturedProjectGallery projects={comingUpNextProjects} />
         <AboutMe />
         <FooterMain />
       </HomeContainer>

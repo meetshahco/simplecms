@@ -6,6 +6,7 @@ import { ArrowLeft, Plus, X } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { adminPath } from "@/lib/admin-utils";
+import { MediaSelectorModal } from "@/components/admin/MediaSelectorModal";
 
 const Editor = dynamic(() => import("@/components/editor/Editor"), {
     ssr: false,
@@ -41,6 +42,7 @@ export default function NewProjectPage() {
         categoryList: [] as string[],
         image: "",
         video: "",
+        clientLogo: "",
         metrics: [] as { label: string; value: string }[],
         starred: false,
         status: "draft" as "draft" | "published",
@@ -48,6 +50,11 @@ export default function NewProjectPage() {
 
     const [isDraggingCover, setIsDraggingCover] = useState(false);
     const [uploadingCover, setUploadingCover] = useState(false);
+    const [isDraggingLogo, setIsDraggingLogo] = useState(false);
+    const [uploadingLogo, setUploadingLogo] = useState(false);
+
+    const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
+    const [activeMediaTarget, setActiveMediaTarget] = useState<"image" | "clientLogo" | null>(null);
 
     const handleSubmit = async () => {
         if (!form.title.trim()) return;
@@ -99,6 +106,16 @@ export default function NewProjectPage() {
 
     return (
         <div className="flex-1 overflow-y-auto w-full p-4 md:p-8">
+            <MediaSelectorModal 
+                isOpen={isMediaModalOpen} 
+                onClose={() => setIsMediaModalOpen(false)} 
+                onSelect={(url) => {
+                    if (activeMediaTarget) {
+                        setForm({ ...form, [activeMediaTarget]: url });
+                    }
+                }} 
+            />
+
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 md:gap-0">
                 <div className="flex flex-col items-start gap-1 md:gap-0">
@@ -152,8 +169,7 @@ export default function NewProjectPage() {
                         <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center z-20 gap-3">
                             <span className="text-white font-medium bg-black/50 px-4 py-2 rounded-full backdrop-blur-md pointer-events-none">Change Cover Image</span>
                             <div className="flex gap-2">
-                                <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); const url = prompt("Paste external image URL:"); if (url) setForm({ ...form, image: url }); }} className="px-3 py-1.5 bg-black/50 hover:bg-black/70 text-white text-xs rounded-lg transition-colors backdrop-blur-md border border-white/10">Paste Link</button>
-                                <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open("/admin/media", "_blank"); }} className="px-3 py-1.5 bg-black/50 hover:bg-black/70 text-white text-xs rounded-lg transition-colors backdrop-blur-md border border-white/10">Media Library</button>
+                                <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveMediaTarget("image"); setIsMediaModalOpen(true); }} className="px-3 py-1.5 bg-black/50 hover:bg-black/70 text-white text-xs rounded-lg transition-colors backdrop-blur-md border border-white/10">Media Library</button>
                                 <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setForm({ ...form, image: "" }); }} className="px-3 py-1.5 bg-red-500/50 hover:bg-red-500/70 text-white text-xs rounded-lg transition-colors backdrop-blur-md border border-white/10">Remove</button>
                             </div>
                         </div>
@@ -164,8 +180,7 @@ export default function NewProjectPage() {
                         <p className="text-sm font-medium text-neutral-300">Add Cover Image</p>
                         <p className="text-xs text-neutral-500 mt-1 mb-4">Drag & drop or click to attach from computer</p>
                         <div className="flex items-center justify-center gap-2 pointer-events-auto">
-                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); const url = prompt("Paste external image URL:"); if (url) setForm({ ...form, image: url }); }} className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs rounded-lg transition-colors border border-white/10">Paste Link</button>
-                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open("/admin/media", "_blank"); }} className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs rounded-lg transition-colors border border-white/10">Media Library</button>
+                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveMediaTarget("image"); setIsMediaModalOpen(true); }} className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs rounded-lg transition-colors border border-white/10">Media Library</button>
                         </div>
                     </div>
                 )}
@@ -280,6 +295,72 @@ export default function NewProjectPage() {
                             className={inputClass}
                             placeholder="e.g. Branding, Press Enter or Comma"
                         />
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-medium text-neutral-400 mb-2 uppercase tracking-wider">
+                            Client Logo (Hero Overlay)
+                        </label>
+                        <div
+                            onDragOver={(e) => { e.preventDefault(); setIsDraggingLogo(true); }}
+                            onDragLeave={() => setIsDraggingLogo(false)}
+                            onDrop={async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsDraggingLogo(false);
+                                const file = e.dataTransfer?.files?.[0];
+                                if (file && (file.type.startsWith("image/"))) {
+                                    setUploadingLogo(true);
+                                    const res = await uploadFile(file);
+                                    if (res) setForm({ ...form, clientLogo: res.url });
+                                    setUploadingLogo(false);
+                                }
+                            }}
+                            className={`relative w-full h-24 rounded-xl mb-3 overflow-hidden transition-all flex flex-col items-center justify-center cursor-pointer border-2 ${isDraggingLogo ? "border-blue-500 bg-blue-500/10" : form.clientLogo ? "border-transparent bg-white/5" : "border-dashed border-white/20 hover:border-white/40 hover:bg-white/5"}`}
+                        >
+                            {form.clientLogo ? (
+                                <>
+                                    <div className="absolute inset-0 flex items-center justify-center p-4">
+                                        <img src={form.clientLogo} alt="Logo" className="max-h-full max-w-full object-contain filter drop-shadow-md" />
+                                    </div>
+                                    <div className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center z-20 gap-2">
+                                        <div className="flex gap-2">
+                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveMediaTarget("clientLogo"); setIsMediaModalOpen(true); }} className="px-3 py-1 bg-black/50 hover:bg-black/70 text-white text-[10px] rounded transition-colors backdrop-blur-md border border-white/10">Media Library</button>
+                                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setForm({ ...form, clientLogo: "" }); }} className="px-3 py-1 bg-red-500/50 hover:bg-red-500/70 text-white text-[10px] rounded transition-colors backdrop-blur-md border border-white/10">Remove</button>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="text-center p-2 z-20 relative pointer-events-none">
+                                    <p className="text-xs font-medium text-neutral-300">Add Logo (SVG/PNG)</p>
+                                    <p className="text-[10px] text-neutral-500 mt-0.5 mb-2">Drag & drop from computer</p>
+                                    <div className="flex items-center justify-center gap-2 pointer-events-auto">
+                                        <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveMediaTarget("clientLogo"); setIsMediaModalOpen(true); }} className="px-2 py-1 bg-white/10 hover:bg-white/20 text-white text-[10px] rounded transition-colors border border-white/10">Media Library</button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Fallback hidden input */}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        setUploadingLogo(true);
+                                        const res = await uploadFile(file);
+                                        if (res) setForm({ ...form, clientLogo: res.url });
+                                        setUploadingLogo(false);
+                                    }
+                                }}
+                            />
+                            {uploadingLogo && (
+                                <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-10">
+                                    <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div>

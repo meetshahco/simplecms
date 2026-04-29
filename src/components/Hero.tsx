@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect, useMemo, useRef, useLayoutEffect } from "react";
-import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
-import Image from "next/image";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useContactAnimation } from "@/context/ContactAnimationContext";
 
@@ -14,153 +14,27 @@ const ROLES = [
     "own the vision",
 ];
 
-// Configuration: Add any keyword here to attach a spotlight image to it
-// Added 'className' for walker shape, 'decorationClass' for underline style, 'textClass' for text styling, 'appendIcon' for trailing icon
-type HighlightConfig = {
-    media: string;
-    decorationClass: string;
-    walkerClass?: string;
-    textClass?: string;
-    appendIcon?: React.ReactNode;
-    customDecoration?: (isPassed: boolean) => React.ReactNode;
-    duration?: number; // Optional custom display duration in ms
-};
-
-const HIGHLIGHT_CONFIG: Record<string, HighlightConfig> = {
-    "Meet Shah": {
-        media: "/assets/meet_shah_v2.jpg",
-        decorationClass: "bg-blue-500 h-[3px]", // Standard thick underline
-        textClass: "font-medium text-blue-200 drop-shadow-[0_0_6px_rgba(147,197,253,0.6)]", // Soft personal blue glow
-        walkerClass: "!w-32 !h-24 sm:!w-48 sm:!h-36 rounded-2xl rotate-2 shadow-2xl object-cover border-2 border-white/10", // 4:3 fixed size
-    },
-    "Product Designer": {
-        media: "/assets/product_designer.gif",
-        decorationClass: "bg-transparent border-b-4 border-dotted border-purple-500 h-1", // Dotted underline
-        textClass: "font-semibold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]", // High contrast text shadow
-        walkerClass: "!w-40 !h-24 sm:!w-64 sm:!h-36 rounded-xl rotate-1 grainy-filter", // Wide 16:9 box, grainy filter
-    },
-    "India": {
-        media: "/assets/india_temple.jpg",
-        decorationClass: "bg-gradient-to-r from-orange-400 via-white to-green-400 h-[3px]", // Tricolor gradient
-        textClass: "font-medium text-amber-400 drop-shadow-[0_0_8px_rgba(217,119,6,0.9)] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]", // Warm golden bronze feel
-        walkerClass: "!w-24 !h-24 sm:!w-40 sm:!h-40 rounded-3xl object-cover shadow-2xl border border-white/20 -rotate-2 brightness-[0.70] contrast-[0.85]", // Lowered brightness/contrast for readability
-    },
-    "cooking": {
-        media: "/assets/cooking.gif",
-        // Using static SVG file for reliability
-        decorationClass: "bg-[url('/assets/wave.svg')] h-[12px] bg-bottom bg-repeat-x w-full",
-        textClass: "font-medium text-amber-200 drop-shadow-[0_0_6px_rgba(252,211,77,0.6)]", // Warm culinary yellow/orange
-        walkerClass: "!w-32 !h-24 sm:!w-48 sm:!h-36 rounded-xl rotate-3 shadow-xl object-cover border border-white/20", // 4:3 GIF
-    },
-    "travelling": {
-        media: "/assets/travelling.gif",
-        decorationClass: "", // Handled by customDecoration
-        textClass: "font-medium text-emerald-300 drop-shadow-[0_0_6px_rgba(110,231,183,0.5)]", // Earthy/fresh green
-        walkerClass: "!w-40 !h-24 sm:!w-64 sm:!h-36 rounded-2xl -rotate-1 shadow-2xl object-cover", // Set precise 16:9 box for ezgif download
-        duration: 5500, // Custom extended duration to let the EZgif loop complete entirely
-        customDecoration: (isPassed) => <TravellingDecoration isVisible={isPassed} colorTheme="green" iconType="motorcycle" />
-    },
-    "Cinema": {
-        media: "/assets/cinema.gif", // "Cinema" GIF
-        decorationClass: "bg-red-500 h-[2px]", // Red underline to match
-        textClass: "font-bold text-red-400 drop-shadow-[0_0_8px_rgba(248,113,113,0.8)]", // Bold, Red, Glow applied to TEXT
-        walkerClass: "rounded-md rotate-3",
-    },
-    "knowledge": {
-        media: "/assets/knowledge_star.gif", // "The more you know" GIF
-        decorationClass: "bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-500 h-[2px]",
-        textClass: "font-bold italic text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-400 animate-gradient bg-[length:200%_auto]",
-        // Expanded size, shifted center far right over "haha!", tilted, and grainy
-        walkerClass: "!w-40 !h-20 sm:!w-64 sm:!h-32 !left-full !-translate-x-[40%] rounded-lg -rotate-6 grainy-filter",
-    },
-    "I'm really here!": {
-        media: "", // Moved to inline layout
-        decorationClass: "", // No underline
-        walkerClass: "", // Moved to inline layout
-        textClass: "font-bold italic text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-500 to-sky-400 animate-gradient bg-[length:200%_auto]",
-    }
-};
-
-const HERO_TEXT = "Hey there, I’m Meet Shah, a Product Designer from India who loves cooking, travelling and watching Cinema - to gain knowledge, haha!";
-
-// Temporary placeholder config for frontend. Later this can be fetched from the CMS
-// Map these 1.svg, 2.svg etc. to the images from your Google Drive inside the `public/brands` folder.
 const CLIENT_LOGOS = [
-    { id: '1', name: 'Brand 1', src: '/brands/1.svg' },
-    { id: '2', name: 'Brand 2', src: '/brands/2.svg' },
-    { id: '3', name: 'Brand 3', src: '/brands/3.svg' },
-    { id: '4', name: 'Brand 4', src: '/brands/4.svg' },
-    { id: '5', name: 'Brand 5', src: '/brands/5.svg' },
-    { id: '6', name: 'Brand 6', src: '/brands/6.svg' },
-    { id: '7', name: 'Brand 7', src: '/brands/7.svg' },
-    { id: '8', name: 'Brand 8', src: '/brands/8.svg' },
-    { id: '9', name: 'Brand 9', src: '/brands/9.svg' },
-    { id: '10', name: 'Brand 10', src: '/brands/10.svg' },
-    { id: '11', name: 'Brand 11', src: '/brands/11.svg' },
+    { id: '1', name: 'Brand 1', src: '/uploads/1.svg' },
+    { id: '2', name: 'Brand 2', src: '/uploads/2.svg' },
+    { id: '3', name: 'Brand 3', src: '/uploads/3.svg' },
+    { id: '4', name: 'Brand 4', src: '/uploads/4.svg' },
+    { id: '5', name: 'Brand 5', src: '/uploads/5.svg' },
+    { id: '6', name: 'Brand 6', src: '/uploads/6.svg' },
+    { id: '7', name: 'Brand 7', src: '/uploads/7.svg' },
+    { id: '8', name: 'Brand 8', src: '/uploads/8.svg' },
+    { id: '9', name: 'Brand 9', src: '/uploads/9.svg' },
+    { id: '10', name: 'Brand 10', src: '/uploads/10.svg' },
+    { id: '11', name: 'Brand 11', src: '/uploads/11.svg' },
 ];
-export function Hero() {
+
+import Link from "next/link";
+import { Play } from "lucide-react";
+import type { Project } from "@/lib/cms/storage";
+
+export function Hero({ featuredProject }: { featuredProject?: Project }) {
     const [roleIndex, setRoleIndex] = useState(0);
-    const [highlightIndex, setHighlightIndex] = useState(0);
-    const [rects, setRects] = useState<Record<string, DOMRect>>({});
-    const containerRef = useRef<HTMLDivElement>(null);
-    const refs = useRef<Record<string, HTMLSpanElement | null>>({});
-    const { triggerPlaneAnimation, isViewDeckCta, viewDeckRef } = useContactAnimation();
-
-    const [subheaderPhase, setSubheaderPhase] = useState<"idle" | "text" | "end">("idle");
-    const [hasLooped, setHasLooped] = useState(false);
-
-    // Get active keys that are actually present in the text (Header only)
-    const headerKeys = useMemo(() => {
-        return Object.keys(HIGHLIGHT_CONFIG).filter(key => HERO_TEXT.includes(key));
-    }, []);
-
-    // Subheader specific keys
-    const subheaderKeys = useMemo(() => ["I'm really here!", "end-marker"], []);
-    const allKeys = useMemo(() => [...headerKeys, ...subheaderKeys], [headerKeys, subheaderKeys]);
-
-    // Parse text into multiple segments for rendering
-    const textSegments = useMemo(() => {
-        // Create a regex to split by keywords, keeping delimiters
-        const regex = new RegExp(`(${headerKeys.join("|")})`, "g");
-        return HERO_TEXT.split(regex);
-    }, [headerKeys]);
-
-    // Update positions on resize or index change
-    const updateRects = () => {
-        if (!containerRef.current) return;
-        const containerRect = containerRef.current.getBoundingClientRect();
-        const newRects: Record<string, DOMRect> = {};
-
-        allKeys.forEach((key) => {
-            const el = refs.current[key];
-            if (el) {
-                const rect = el.getBoundingClientRect();
-                // Calculate relative position to container
-                newRects[key] = {
-                    ...rect,
-                    left: rect.left - containerRect.left,
-                    top: rect.top - containerRect.top,
-                    width: rect.width,
-                    height: rect.height,
-                    // JSON doesn't serialize methods, but we just need the properties
-                    x: rect.x, y: rect.y, bottom: rect.bottom, right: rect.right, toJSON: () => { }
-                } as DOMRect;
-            }
-        });
-        setRects(newRects);
-    };
-
-    useLayoutEffect(() => {
-        updateRects();
-        window.addEventListener("resize", updateRects);
-        // Small delay to ensure fonts/layout are stable
-        const timer = setTimeout(updateRects, 100);
-        return () => {
-            window.removeEventListener("resize", updateRects);
-            clearTimeout(timer);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [allKeys]);
+    const { isViewDeckCta, viewDeckRef, triggerPlaneAnimation } = useContactAnimation();
 
     // Cycle Roles
     useEffect(() => {
@@ -170,309 +44,160 @@ export function Hero() {
         return () => clearInterval(interval);
     }, []);
 
-    // Cycle Header Highlights (The Main Walker) - Loops Infinite
-    useEffect(() => {
-        const cycle = () => {
-            setHighlightIndex((prev) => {
-                const next = (prev + 1) % headerKeys.length;
-                if (next === 0 && !hasLooped) {
-                    setHasLooped(true); // Trigger subheader after first full loop
-                }
-                return next;
-            });
-        };
-
-        const currentKey = headerKeys[highlightIndex];
-        const delay = HIGHLIGHT_CONFIG[currentKey]?.duration || 3000;
-
-        const timeout = setTimeout(cycle, delay);
-
-        return () => clearTimeout(timeout);
-    }, [headerKeys, hasLooped, highlightIndex]);
-
-    // Subheader Sequence
-    useEffect(() => {
-        if (hasLooped && subheaderPhase === "idle") {
-            // Start subheader sequence
-            setSubheaderPhase("text");
-
-            // Wait for the walker to slide to the text before launching the plane
-            setTimeout(() => {
-                const domNode = refs.current["I'm really here!"];
-                if (domNode) {
-                    const rect = domNode.getBoundingClientRect();
-                    triggerPlaneAnimation({
-                        x: rect.left + rect.width / 2,
-                        y: rect.top + rect.height / 2
-                    });
-                }
-            }, 800);
-
-            setTimeout(() => {
-                setSubheaderPhase("end");
-            }, 3000); // Wait 3s on text then move to end
-        }
-    }, [hasLooped, subheaderPhase, triggerPlaneAnimation]);
-
-    const activeKey = headerKeys[highlightIndex];
-    const activeConfig = HIGHLIGHT_CONFIG[activeKey];
-    const activeRect = rects[activeKey];
-
     return (
-        <section className="relative flex min-h-[90vh] flex-col justify-center px-6 md:px-12 pt-32 md:pt-48 pb-16 overflow-hidden">
-            <div className="mx-auto max-w-5xl relative z-10 w-full" ref={containerRef}>
-                <LayoutGroup>
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="font-heading text-4xl font-medium leading-tight text-white md:text-6xl md:leading-snug relative isolate"
-                    >
-                        {/* The Walker - Smooth Sine Motion Image BEHIND text */}
-                        <AnimatePresence mode="wait">
-                            {activeRect && activeConfig && (
-                                <motion.div
-                                    key={activeKey === "I'm really here!" ? "subheader-walker" : "header-walker"}
-                                    className="absolute z-0 pointer-events-none"
-                                    initial={{
-                                        opacity: 0,
-                                        scale: 0.8,
-                                        top: activeRect.top,
-                                        left: activeRect.left,
-                                        width: activeRect.width,
-                                        height: activeRect.height,
-                                    }}
-                                    animate={{
-                                        opacity: 1,
-                                        scale: 1,
-                                        top: activeRect.top,
-                                        left: activeRect.left,
-                                        width: activeRect.width,
-                                        height: activeRect.height,
-                                    }}
-                                    exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.3 } }}
-                                    transition={{
-                                        type: "spring",
-                                        stiffness: 120,
-                                        damping: 20,
-                                        mass: 0.8
-                                    }}
+        <section className="relative flex flex-col pt-20 md:pt-28 pb-4 overflow-hidden w-full items-center justify-center min-h-[80vh]">
+            
+            {/* NETFLIX-STYLE HERO CARD */}
+            {featuredProject && (
+                <div className="w-full px-6 sm:px-10 md:px-[53px] relative z-10 mb-8 sm:mb-12">
+                    <div className="group relative w-full min-h-[480px] sm:min-h-[550px] max-h-[60vh] sm:max-h-[65vh] lg:max-h-[70vh] aspect-[4/5] sm:aspect-[16/9] md:aspect-[21/9] rounded-[24px] md:rounded-[32px] overflow-hidden bg-neutral-900 border border-white/10 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.8)] transition-all duration-700 hover:border-white/30 hover:shadow-[0_0_80px_-20px_rgba(255,255,255,0.15)] cursor-pointer">
+                        
+                        {/* Full Card Click Overlay */}
+                        <Link href={`/work/${featuredProject.id}?from=home`} className="absolute inset-0 z-10" aria-label={`View ${featuredProject.title} project`} />
+                        
+                        {/* Background Cover */}
+                        {featuredProject.image && (
+                            <motion.img 
+                                src={featuredProject.image} 
+                                alt={featuredProject.title}
+                                animate={{ scale: [1, 1.05, 1] }}
+                                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                                className="absolute inset-0 w-full h-full object-cover object-center mix-blend-overlay origin-center"
+                            />
+                        )}
+
+                        {/* Cinematic Gradients */}
+                        <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-black via-black/80 sm:to-black/20 to-transparent" />
+
+                        {/* Content Overlay */}
+                        <div className="absolute inset-0 flex flex-col p-6 sm:p-8 md:p-10 lg:p-12 max-w-full sm:max-w-[90%] md:max-w-[80%] lg:max-w-[70%] 2xl:max-w-[60%] pointer-events-none z-20">
+                            
+                            <div className="flex-1 flex flex-col justify-end sm:justify-center items-center sm:items-start text-center sm:text-left min-h-0 overflow-hidden pointer-events-auto pb-4 sm:pb-0">
+                                {/* Logo */}
+                                {featuredProject.clientLogo && (
+                                    <div className="mb-6 sm:mb-6 shrink-0">
+                                        <img src={featuredProject.clientLogo} alt={`${featuredProject.title} Logo`} className="h-6 sm:h-8 md:h-10 object-contain" />
+                                    </div>
+                                )}
+
+                                {/* Title */}
+                                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.5rem] font-heading font-black text-white tracking-tight leading-[1.2] mb-6 sm:mb-4 drop-shadow-lg line-clamp-3 sm:line-clamp-4 shrink-0 px-4 sm:px-0">
+                                    {featuredProject.title}
+                                </h2>
+
+                                {/* Categories */}
+                                <div className="flex items-center justify-center sm:justify-start flex-wrap text-[10px] sm:text-xs md:text-sm font-medium text-white/80 mb-6 sm:mb-5 drop-shadow-md leading-none shrink-0 w-full px-2 sm:px-0">
+                                    {featuredProject.category && featuredProject.category.split(',').map((cat, idx, arr) => (
+                                        <span key={cat.trim()} className="flex items-center uppercase tracking-widest">
+                                            {cat.trim()}
+                                            {idx < arr.length - 1 && (
+                                                <span className="text-white/50 text-[8px] sm:text-[10px] flex items-center mx-3 sm:mx-4">•</span>
+                                            )}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                {/* Description */}
+                                {featuredProject.description && (
+                                    <p className="hidden sm:block text-xs sm:text-sm md:text-base lg:text-lg text-neutral-300 font-medium leading-relaxed drop-shadow-md line-clamp-3 sm:line-clamp-4 md:line-clamp-5 lg:line-clamp-6">
+                                        {featuredProject.description}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Actions */}
+                            <div className="mt-2 sm:mt-auto pt-2 sm:pt-6 flex justify-center sm:justify-start items-center shrink-0 pointer-events-auto w-full sm:w-auto z-30 relative">
+                                <Link 
+                                    href={`/work/${featuredProject.id}?from=home`}
+                                    className="group flex items-center gap-2 sm:gap-3 bg-white text-black px-4 sm:px-6 md:px-7 py-2 sm:py-2.5 md:py-3 rounded-lg font-bold text-xs sm:text-sm transition-all hover:bg-neutral-200 hover:scale-105 active:scale-95"
                                 >
-                                    {/* The Walker Shape & Image */}
-                                    <motion.div
-                                        className={cn(
-                                            "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[70%] w-20 h-20 sm:w-24 sm:h-24 overflow-hidden border-2 border-white/20 shadow-2xl bg-black",
-                                            activeConfig.walkerClass
-                                        )}
-                                        initial={{ opacity: 0.4, scale: 0.8 }}
-                                        animate={{ opacity: 1, scale: 1.1 }}
-                                        transition={{
-                                            duration: 0.4,
-                                            ease: "circOut"
-                                        }}
-                                    >
-                                        <AnimatePresence mode="wait">
-                                            <motion.div
-                                                key={activeKey} // Key change triggers exit/enter
-                                                className="w-full h-full relative"
-                                                initial={{ opacity: 0, scale: 1.2 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                exit={{ opacity: 0, scale: 0.8 }}
-                                                transition={{ duration: 0.3 }}
-                                            >
-                                                <Image
-                                                    src={activeConfig.media}
-                                                    alt={activeKey}
-                                                    fill
-                                                    className="object-cover"
-                                                    unoptimized={activeConfig.media.endsWith('.gif')}
-                                                />
-                                            </motion.div>
-                                        </AnimatePresence>
-                                    </motion.div>
+                                    <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 fill-current" />
+                                    Play Project
+                                </Link>
+                            </div>
+                        </div>
 
-                                    {/* Background Glow/Highlight behind text */}
-                                    <motion.div
-                                        className={cn(
-                                            "absolute -top-4 -left-2 -right-2 -bottom-4 sm:-top-6 sm:-left-4 sm:-right-4 sm:-bottom-6 -z-10 bg-neutral-800/50 block rounded-xl"
-                                        )}
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ duration: 0.3 }}
-                                    />
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        {/* Case Studies Chip */}
+                        {featuredProject.caseStudyCount && featuredProject.caseStudyCount > 0 ? (
+                            <div className="absolute top-6 left-1/2 -translate-x-1/2 bottom-auto sm:top-auto sm:left-auto sm:translate-x-0 sm:bottom-8 sm:right-8 md:bottom-10 md:right-10 lg:bottom-12 lg:right-12 bg-white/10 backdrop-blur-md border border-white/20 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[9px] sm:text-[10px] md:text-xs font-semibold uppercase tracking-wider shadow-xl z-20 pointer-events-none">
+                                {featuredProject.caseStudyCount} Case Studies
+                            </div>
+                        ) : null}
+                    </div>
+                </div>
+            )}
 
-
-                        {/* Subheader tracking removed completely for native Flex Layout inline positioning */}
-                        {textSegments.map((segment, i) => {
-                            const config = HIGHLIGHT_CONFIG[segment];
-                            if (config) {
-                                const currentIndex = headerKeys.indexOf(segment);
-                                return (
-                                    <HighlightTarget
-                                        key={i}
-                                        text={segment}
-                                        config={config}
-                                        isActive={highlightIndex === currentIndex}
-                                        isPassed={highlightIndex > currentIndex}
-                                        setRef={(el) => { refs.current[segment] = el; }}
-                                    />
-                                );
-                            }
-                            return <span key={i} className="text-white/60 transition-colors duration-500 relative z-10">{segment}</span>;
-                        })}
-
-                    </motion.h1>
-                </LayoutGroup>
-
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5, duration: 0.8 }}
-                    className="mt-16 sm:mt-24 text-xl font-light text-neutral-400 sm:text-2xl md:text-3xl flex flex-wrap items-center gap-x-2 sm:gap-x-3 relative z-10"
-                >
-                    <span className="whitespace-nowrap opacity-50 px-1">I’m here to</span>
-                    <div className="relative inline-flex h-[1.3em] overflow-hidden align-bottom">
-                        <motion.div
-                            layout
-                            className="relative flex flex-col justify-center w-auto min-w-[max-content]"
-                        >
+            {/* The Notibar - Subdued Text Strip */}
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="w-full relative z-10"
+            >
+                <div className="flex items-center justify-center w-full py-2 px-4 sm:px-6">
+                    <div className="text-[14px] sm:text-base md:text-lg lg:text-xl font-light text-neutral-500/80 flex flex-nowrap items-center justify-center gap-x-1.5 sm:gap-x-2 italic leading-tight w-full whitespace-nowrap overflow-hidden">
+                        <span className="shrink-0">I’m here to</span>
+                        <motion.div layout className="relative inline-flex h-[1.2em] overflow-hidden items-center justify-center shrink-0 w-auto min-w-[max-content]">
                             <AnimatePresence mode="popLayout" initial={false}>
                                 <motion.span
                                     key={ROLES[roleIndex]}
-                                    initial={{ y: "110%", opacity: 0, filter: "blur(8px)" }}
+                                    initial={{ y: "110%", opacity: 0, filter: "blur(4px)" }}
                                     animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                                    exit={{ y: "-110%", opacity: 0, filter: "blur(8px)" }}
-                                    transition={{
-                                        y: { duration: 0.5, ease: [0.32, 0.72, 0, 1] },
-                                        opacity: { duration: 0.3 },
-                                        filter: { duration: 0.3 }
-                                    }}
-                                    className="whitespace-nowrap font-medium text-white block leading-none px-1"
+                                    exit={{ y: "-110%", opacity: 0, filter: "blur(4px)" }}
+                                    transition={{ y: { duration: 0.4, ease: [0.32, 0.72, 0, 1] }, opacity: { duration: 0.2 } }}
+                                    className="font-medium text-neutral-400 block whitespace-nowrap"
                                 >
                                     {ROLES[roleIndex]}
                                 </motion.span>
                             </AnimatePresence>
                         </motion.div>
+                        <span className="shrink-0 truncate">which AI shouldn't</span>
                     </div>
-                    <span className="opacity-50 whitespace-nowrap px-1">which AI shouldn’t,</span>
+                </div>
+            </motion.div>
 
-                    {/* Integrated "I'm really here!" into the walker system in the subheader */}
-                    <div className="flex items-center flex-nowrap gap-x-2">
-                        <a
-                            href="/contact"
-                            className="inline-block relative z-20 transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] hover:scale-110 hover:-rotate-2 hover:drop-shadow-[0_0_15px_rgba(56,189,248,0.6)]"
-                        >
-                            <HighlightTarget
-                                text="I'm really here!"
-                                config={HIGHLIGHT_CONFIG["I'm really here!"] || {
-                                    media: "",
-                                    decorationClass: "",
-                                    textClass: "text-white font-medium"
-                                }}
-                                isActive={subheaderPhase === "text"}
-                                isPassed={false} // Reverts to base state when phase ends
-                                setRef={(el) => { refs.current["I'm really here!"] = el; }}
-                                inactiveClass="text-neutral-400 opacity-50 transition-all duration-1000"
-                            />
-
-                            {/* Absolutely positioned Dwight GIF overlapping the text at roughly 90/10 ratio */}
-                            <div className="absolute top-1/2 left-[90%] -translate-y-1/2 w-16 h-14 sm:w-28 sm:h-24 pointer-events-none z-0">
-                                <AnimatePresence>
-                                    {(subheaderPhase === "text" || subheaderPhase === "end") && (
-                                        <motion.div
-                                            initial={{ opacity: 0, scale: 0.8, rotate: -15, filter: "blur(4px)" }}
-                                            animate={{ opacity: 1, scale: 1, rotate: 3, filter: "blur(0px)" }}
-                                            exit={{ opacity: 0, scale: 0.8, filter: "blur(4px)" }}
-                                            transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                                            className="absolute inset-0 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl bg-black origin-bottom-left"
-                                        >
-                                            <Image
-                                                src="/assets/dwight_phone.gif"
-                                                alt="dwight typing"
-                                                fill
-                                                className="object-cover"
-                                                unoptimized
-                                            />
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-                        </a>
-                    </div>
-                </motion.div>
-
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 1, duration: 0.5 }}
-                    className="mt-4 relative z-10"
-                >
-                    <a
-                        href="https://drive.google.com/file/d/1T2yRyHmrCg2aqya-pVXIBlPyfyaPwqoc/view"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        ref={viewDeckRef}
-                        className={cn(
-                            "group inline-flex items-center gap-2 rounded-full transition-all duration-700 overflow-hidden",
-                            isViewDeckCta
-                                ? "bg-white text-black text-sm font-medium px-6 py-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:scale-105 hover:bg-neutral-200 ring-1 ring-white/0"
-                                : "bg-transparent text-neutral-400 font-medium text-sm px-6 py-2 ring-1 ring-inset ring-white/20 hover:ring-white/40 hover:text-white"
-                        )}
-                    >
-                        View Deck
-                        <ArrowRight className={cn("transition-transform group-hover:translate-x-1", isViewDeckCta ? "w-4 h-4" : "w-4 h-4")} />
-                    </a>
-                </motion.div>
-
-                <BrandStrip isVisible={isViewDeckCta} />
+            {/* Marquee reserved space */}
+            <div className="w-full relative z-0 mt-6 md:mt-8">
+                <BrandStrip isVisible={true} />
             </div>
         </section>
     );
 }
 
 function BrandStrip({ isVisible }: { isVisible: boolean }) {
-    // Duplicate the logos array to achieve a seamless marquee effect
-    // We triplicate it so that we can pan one full set and loop back instantly without jump cuts
     const marqueeLogos = [...CLIENT_LOGOS, ...CLIENT_LOGOS, ...CLIENT_LOGOS];
 
     return (
-        <div className="w-full mt-8 h-16 sm:h-20 mb-6 relative">
+        <div className="w-full h-10 sm:h-12 relative overflow-hidden">
             <AnimatePresence>
                 {isVisible && (
                     <motion.div
-                        initial={{ opacity: 0, filter: "blur(4px)" }}
-                        animate={{ opacity: 1, filter: "blur(0px)" }}
-                        exit={{ opacity: 0, filter: "blur(4px)" }}
-                        transition={{ duration: 1.2, delay: 0.2 }}
-                        className="absolute inset-0 w-full h-full overflow-hidden py-3 sm:py-4 before:absolute before:inset-0 before:bg-white/[0.015] before:rounded-3xl before:-z-10"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="absolute inset-0 w-full h-full"
                     >
                         {/* Fading edges so logos appear to slide out of nothing */}
-                        <div className="absolute inset-y-0 left-0 w-16 sm:w-32 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
-                        <div className="absolute inset-y-0 right-0 w-16 sm:w-32 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
+                        <div className="absolute inset-y-0 left-0 w-12 sm:w-24 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
+                        <div className="absolute inset-y-0 right-0 w-12 sm:w-24 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
 
-                        <div className="flex w-max items-center">
+                        <div className="flex w-max items-center h-full">
                             <motion.div
-                                className="flex items-center gap-16 sm:gap-24 px-8"
+                                className="flex items-center gap-10 sm:gap-16 px-4 h-full"
                                 animate={{ x: "-33.333333%" }} // Moves exactly one set of logos
-                                transition={{ ease: "linear", duration: 55, repeat: Infinity }}
+                                transition={{ ease: "linear", duration: 40, repeat: Infinity }}
                             >
                                 {marqueeLogos.map((logo, index) => (
                                     <div
                                         key={`${logo.id}-${index}`}
-                                        className="relative w-20 h-6 sm:w-28 sm:h-10 flex items-center justify-center group cursor-pointer"
+                                        className="relative w-16 h-5 sm:w-24 sm:h-7 md:w-32 md:h-10 flex items-center justify-center group cursor-pointer"
                                     >
-                                        {/* Using native img to avoid build-time errors if Next Image doesn't find the source yet */}
                                         <img
                                             src={logo.src}
                                             alt={logo.name}
                                             onError={(e) => {
-                                                // Provide invisible placeholder if file missing
                                                 e.currentTarget.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
                                             }}
-                                            className="w-full h-full object-contain grayscale opacity-40 mix-blend-plus-lighter hover:mix-blend-normal hover:grayscale-0 hover:opacity-100 transition-all duration-500 hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.25)]"
+                                            className="w-full h-full object-contain grayscale opacity-30 mix-blend-plus-lighter hover:mix-blend-normal hover:grayscale-0 hover:opacity-100 transition-all duration-500"
                                         />
                                     </div>
                                 ))}
@@ -484,218 +209,3 @@ function BrandStrip({ isVisible }: { isVisible: boolean }) {
         </div>
     );
 }
-
-function HighlightTarget({
-    text,
-    config,
-    isActive,
-    isPassed,
-    setRef,
-    inactiveClass = "text-white/60"
-}: {
-    text: string,
-    config: HighlightConfig,
-    isActive: boolean,
-    isPassed: boolean,
-    setRef: (el: HTMLSpanElement | null) => void,
-    inactiveClass?: string
-}) {
-    return (
-        <span ref={setRef} className="relative inline-block whitespace-nowrap px-1 z-10">
-            <span className={cn(
-                "relative z-10 transition-colors duration-500",
-                // Highlight if active OR passed. Otherwise dim.
-                (isActive || isPassed)
-                    ? (config.textClass || "text-white")
-                    : inactiveClass
-            )}>
-                {text}
-                {config.appendIcon} {/* Render optional icon */}
-            </span>
-
-            {/* The Mark - Persistent Highlight/Underline */}
-            {isPassed && config.customDecoration ? (
-                // Custom Decoration for complex animations (e.g., Travelling plane)
-                config.customDecoration(isPassed)
-            ) : isPassed && (
-                <motion.span
-                    initial={{ width: 0 }}
-                    animate={{ width: "100%" }}
-                    className={cn("absolute bottom-0 left-0", config.decorationClass)}
-                />
-            )}
-        </span>
-    );
-}
-
-function TravellingDecoration({ isVisible, colorTheme = "green", iconType = "plane" }: { isVisible: boolean, colorTheme?: "green" | "orange", iconType?: "plane" | "motorcycle" }) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [width, setWidth] = useState(100); // Default to prevent crash/empty
-
-    useLayoutEffect(() => {
-        if (!containerRef.current) return;
-
-        // Initial measure
-        setWidth(containerRef.current.offsetWidth);
-
-        const observer = new ResizeObserver((entries) => {
-            for (const entry of entries) {
-                if (entry.contentBoxSize) {
-                    setWidth(entry.contentRect.width);
-                }
-            }
-        });
-
-        observer.observe(containerRef.current);
-        return () => observer.disconnect();
-    }, []);
-
-    // Define colors based on theme
-    const colors = {
-        green: {
-            primary: "#22c55e", // Green-500
-            secondary: "#14532d", // Green-900 (for icon detail)
-            light: "#86efac", // Green-300 (for particles)
-        },
-        orange: {
-            primary: "#f97316", // Orange-500
-            secondary: "#7c2d12", // Orange-900 (for icon detail)
-            light: "#fdba74", // Orange-300 (for particles)
-        }
-    }[colorTheme];
-
-    // Dynamic path based on measured width
-    const pathD = `M0 20 Q ${width * 0.25} 25 ${width * 0.5} 15 T ${width} 20`;
-
-    return (
-        <div ref={containerRef} className="absolute top-full left-0 w-full h-12 overflow-visible pointer-events-none -mt-4">
-            {/* The Path & Icon */}
-            {isVisible && width > 0 && (
-                <svg width="100%" height="100%" viewBox={`0 0 ${width} 40`} className="overflow-visible">
-                    <defs>
-                        <filter id="cloud-glow" x="-20%" y="-20%" width="140%" height="140%">
-                            <feGaussianBlur stdDeviation="2" result="blur" />
-                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                        </filter>
-                    </defs>
-
-                    {/* Particle/Sparkle Effects along path */}
-                    {[0.2, 0.4, 0.6, 0.8].map((offset, i) => (
-                        <motion.circle
-                            key={i}
-                            r="1.5"
-                            fill={colors.light}
-                            initial={{ opacity: 0, scale: 0 }}
-                            animate={{ opacity: [0, 1, 0], scale: [0, 1.5, 0], offsetDistance: [`${offset * 100 - 10}%`, `${offset * 100}%`] }}
-                            style={{ offsetPath: `path('${pathD}')` }}
-                            transition={{
-                                duration: 1.0,
-                                delay: i * 0.2,
-                                ease: "easeOut",
-                                repeat: Infinity,
-                                repeatDelay: 1
-                            }}
-                        />
-                    ))}
-
-                    {/* Cloud Trail - Separated from vehicle */}
-                    <motion.path
-                        d={pathD}
-                        fill="none"
-                        stroke={colors.primary}
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        strokeDasharray="0 8" // Dotted/Cloudy look
-                        filter="url(#cloud-glow)"
-                        opacity="0.5"
-                        initial={{ pathLength: 0 }}
-                        animate={{ pathLength: 0.9 }}
-                        transition={{ duration: 1.2, ease: "easeInOut" }}
-                    />
-
-                    {/* Core Line */}
-                    <motion.path
-                        d={pathD}
-                        fill="none"
-                        stroke={colors.primary}
-                        strokeWidth="2"
-                        strokeDasharray="4 4" // Dashed line
-                        strokeLinecap="round"
-                        initial={{ pathLength: 0 }}
-                        animate={{ pathLength: 0.85 }}
-                        transition={{ duration: 1.2, ease: "easeInOut" }}
-                    />
-
-                    {/* Vehicle - Leading the pack */}
-                    <motion.g
-                        initial={{ offsetDistance: "0%", opacity: 0 }}
-                        animate={{ offsetDistance: "100%", opacity: 1 }}
-                        style={{
-                            offsetPath: `path('${pathD}')`,
-                            // Motorcycle stays level (0deg), Plane tracks path (auto) relative to tangent
-                            offsetRotate: iconType === "motorcycle" ? "0deg" : "auto"
-                        }}
-                        transition={{ duration: 1.2, ease: "easeInOut" }}
-                    >
-                        {iconType === "plane" ? (
-                            /* Paper Plane Icon */
-                            <g transform="translate(14, -12) rotate(-45)">
-                                <path
-                                    d="M22 2L11 21L2 2L22 2Z"
-                                    fill={colors.primary}
-                                    stroke={colors.primary}
-                                    strokeWidth="2"
-                                    strokeLinejoin="round"
-                                    transform="rotate(270) scale(0.6) translate(-12, -12)"
-                                />
-                                <path
-                                    d="M12 2L12 22"
-                                    stroke={colors.secondary}
-                                    strokeWidth="1"
-                                    transform="rotate(270) scale(0.6) translate(-12, -12)"
-                                />
-                            </g>
-                        ) : (
-                            /* Motorcycle (Bullet/Himalayan Style) Icon - Improved Proportions & Centering */
-                            <g transform="translate(12, -22) scale(0.8)">
-                                {/* Main Body & Frame - Heavy Base */}
-                                <path
-                                    d="M5 16 L10 16 L14 12 L11 12 Z"
-                                    fill={colors.secondary}
-                                />
-                                {/* Tank - Teardrop shape */}
-                                <path
-                                    d="M10 11 Q 13 8 18 11 L 18 12 L 10 12 Z"
-                                    fill={colors.primary}
-                                    stroke={colors.secondary}
-                                    strokeWidth="1"
-                                />
-                                {/* Seat - Flat/Scrambler style */}
-                                <path
-                                    d="M5 11 L10 11 L10 13 L6 13 Z"
-                                    fill="#171717"
-                                />
-                                {/* Wheels - Spoked wire look */}
-                                <circle cx="5" cy="18" r="4.5" stroke={colors.primary} strokeWidth="1.5" fill="none" />
-                                <circle cx="21" cy="18" r="4.5" stroke={colors.primary} strokeWidth="1.5" fill="none" />
-
-                                {/* Engine Block */}
-                                <rect x="11" y="13" width="4" height="4" rx="1" fill={colors.secondary} />
-
-                                {/* Handlebars - Rising up */}
-                                <path d="M16 11 L16 9 L14 8" stroke={colors.primary} strokeWidth="1.5" fill="none" />
-
-                                {/* Headlight - Round Classic */}
-                                <circle cx="19" cy="9" r="1.5" fill={colors.light} />
-
-                                {/* Exhaust - Long horizontal */}
-                                <path d="M12 18 L24 18" stroke={colors.secondary} strokeWidth="1.5" strokeLinecap="round" />
-                            </g>
-                        )}
-                    </motion.g>
-                </svg>
-            )}
-        </div>
-    );
-}
-

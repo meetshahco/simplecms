@@ -92,6 +92,7 @@ export interface Project {
     tags: string[];
     image: string;
     video: string;
+    clientLogo?: string; // Optional SVG or image for Hero overlay
     metrics: { label: string; value: string }[];
     starred: boolean;
     status: "draft" | "published";
