@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -522,6 +522,23 @@ function ProjectEditor({
     const [categoryInput, setCategoryInput] = useState("");
     const [isDraggingCover, setIsDraggingCover] = useState(false);
     const [uploadingCover, setUploadingCover] = useState(false);
+    
+    const titleRef = useRef<HTMLTextAreaElement>(null);
+    const descRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        if (titleRef.current) {
+            titleRef.current.style.height = 'auto';
+            titleRef.current.style.height = titleRef.current.scrollHeight + 'px';
+        }
+    }, [project.title]);
+
+    useEffect(() => {
+        if (descRef.current) {
+            descRef.current.style.height = 'auto';
+            descRef.current.style.height = descRef.current.scrollHeight + 'px';
+        }
+    }, [project.description]);
 
     const update = (fields: Partial<ProjectData>) =>
         onProjectChange({ ...project, ...fields });
@@ -605,28 +622,20 @@ function ProjectEditor({
             </div>
 
             <textarea
+                ref={titleRef}
                 value={project.title}
                 onChange={(e) => update({ title: e.target.value })}
                 placeholder="Project title..."
                 className="w-full text-3xl md:text-4xl font-bold text-white bg-transparent border-none outline-none placeholder-neutral-700 mb-2 resize-none overflow-hidden min-h-[48px] md:min-h-[56px] break-words whitespace-pre-wrap flex-shrink-0"
                 style={{ height: "auto" }}
-                onInput={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    target.style.height = 'auto';
-                    target.style.height = target.scrollHeight + 'px';
-                }}
             />
             <textarea
+                ref={descRef}
                 value={project.description}
                 onChange={(e) => update({ description: e.target.value })}
                 placeholder="Brief description..."
                 className="w-full text-base md:text-lg text-neutral-400 bg-transparent border-none outline-none placeholder-neutral-700 mb-6 resize-none overflow-hidden min-h-[48px] break-words whitespace-pre-wrap flex-shrink-0"
                 style={{ height: "auto" }}
-                onInput={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    target.style.height = 'auto';
-                    target.style.height = target.scrollHeight + 'px';
-                }}
             />
 
             <details className="mb-8">
@@ -785,6 +794,23 @@ function CaseStudyEditor({
     const [isDraggingCover, setIsDraggingCover] = useState(false);
     const [uploadingCover, setUploadingCover] = useState(false);
 
+    const titleRef = useRef<HTMLTextAreaElement>(null);
+    const descRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        if (titleRef.current) {
+            titleRef.current.style.height = 'auto';
+            titleRef.current.style.height = titleRef.current.scrollHeight + 'px';
+        }
+    }, [caseStudy?.title]);
+
+    useEffect(() => {
+        if (descRef.current) {
+            descRef.current.style.height = 'auto';
+            descRef.current.style.height = descRef.current.scrollHeight + 'px';
+        }
+    }, [caseStudy?.description]);
+
     if (!caseStudy) return null;
 
     const inputClass =
@@ -858,28 +884,20 @@ function CaseStudyEditor({
             </div>
 
             <textarea
+                ref={titleRef}
                 value={caseStudy.title}
                 onChange={(e) => onCaseStudyChange({ title: e.target.value })}
                 placeholder="Case study title..."
                 className="w-full text-3xl md:text-4xl font-bold text-white bg-transparent border-none outline-none placeholder-neutral-700 mb-2 resize-none overflow-hidden min-h-[48px] md:min-h-[56px] break-words whitespace-pre-wrap flex-shrink-0"
                 style={{ height: "auto" }}
-                onInput={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    target.style.height = 'auto';
-                    target.style.height = target.scrollHeight + 'px';
-                }}
             />
             <textarea
+                ref={descRef}
                 value={caseStudy.description}
                 onChange={(e) => onCaseStudyChange({ description: e.target.value })}
                 placeholder="Brief description..."
                 className="w-full text-base md:text-lg text-neutral-400 bg-transparent border-none outline-none placeholder-neutral-700 mb-6 resize-none overflow-hidden min-h-[48px] break-words whitespace-pre-wrap flex-shrink-0"
                 style={{ height: "auto" }}
-                onInput={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    target.style.height = 'auto';
-                    target.style.height = target.scrollHeight + 'px';
-                }}
             />
 
 

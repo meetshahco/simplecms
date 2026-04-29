@@ -3,7 +3,7 @@
 import { useEditor, EditorContent, BubbleMenu } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-import Image from "@tiptap/extension-image";
+import { Figure } from "./extensions/Figure";
 import Link from "@tiptap/extension-link";
 import Youtube from "@tiptap/extension-youtube";
 import Underline from "@tiptap/extension-underline";
@@ -108,7 +108,7 @@ export default function Editor({
         extensions: [
             StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
             Placeholder.configure({ placeholder }),
-            Image.configure({ inline: false, allowBase64: true }),
+            Figure,
             Link.configure({ openOnClick: false, autolink: true }),
             Youtube.configure({ width: 640, height: 360 }),
             Underline,
@@ -251,7 +251,10 @@ export default function Editor({
                             })
                             .run();
                     } else {
-                        editor.chain().focus().setImage({ src: result.url }).run();
+                        editor.chain().focus().insertContent({
+                            type: 'figure',
+                            attrs: { src: result.url }
+                        }).run();
                     }
                 }
             } catch (err: any) {
@@ -641,7 +644,10 @@ export default function Editor({
         .ProseMirror code { background: rgba(255,255,255,0.1); border-radius: 4px; padding: 2px 6px; font-size: 0.875em; color: #f0abfc; }
         .ProseMirror pre { background: #111; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 1rem; margin: 1rem 0; overflow-x: auto; }
         .ProseMirror pre code { background: none; padding: 0; color: #d4d4d4; font-size: 0.875rem; }
-        .ProseMirror img { max-width: 100%; border-radius: 12px; margin: 1rem 0; }
+        .ProseMirror figure { display: flex; flex-direction: column; align-items: center; margin: 2rem 0; }
+        .ProseMirror figure img { max-width: 100%; border-radius: 12px; margin: 0; }
+        .ProseMirror figcaption { margin-top: 0.75rem; text-align: center; color: #737373; font-size: 0.875rem; font-style: italic; width: 100%; outline: none; }
+        .ProseMirror figcaption.is-empty::before { content: "Type caption for image (optional)"; color: #525252; float: left; width: 100%; pointer-events: none; text-align: center; }
         .ProseMirror hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 2rem 0; }
         .ProseMirror a { color: #60a5fa; text-decoration: underline; text-underline-offset: 2px; }
         .ProseMirror mark { background: rgba(250,204,21,0.3); color: inherit; border-radius: 2px; padding: 1px 2px; }

@@ -6,6 +6,7 @@ import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "fra
 import type { Project, CaseStudy } from "@/lib/cms/storage";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { RichText } from "./RichText";
 
 interface ProjectDetailsProps {
     project: Project;
@@ -105,7 +106,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                             <img 
                                 src={project.image} 
                                 alt="" 
-                                className="w-full h-full object-cover opacity-50 saturate-150 scale-110" 
+                                className="w-full h-full object-cover opacity-70 scale-105" 
                             />
                         </div>
                     )}
@@ -115,7 +116,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,black_90%)] opacity-60" />
                 </div>
 
-                <div className="relative z-10 w-full max-w-5xl flex flex-col items-start gap-8 md:gap-16 px-6 md:px-0">
+                <div className="relative z-10 w-full max-w-7xl flex flex-col items-start gap-8 md:gap-16 px-6 md:px-0">
                     {/* Meta Section - Moved above Theater for better vertical flow and description visibility */}
                     <div className="w-full text-left order-1">
                         <motion.div
@@ -131,12 +132,6 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                             <h1 className="font-heading text-4xl md:text-5xl lg:text-7xl font-bold text-white tracking-tight leading-[1.1] py-2">
                                 {project.title}
                             </h1>
-                            
-                            {project.description && (
-                                <p className="text-lg md:text-2xl text-neutral-300 leading-relaxed max-w-4xl opacity-90 font-medium">
-                                    {project.description}
-                                </p>
-                            )}
                         </motion.div>
                     </div>
 
@@ -175,8 +170,26 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
 
 
             {/* Main Content Area */}
-            <section className="px-6 md:px-12 py-32 pb-60">
-                <div className="max-w-5xl mx-auto relative">
+            <section className="px-6 md:px-12 pt-12 pb-60">
+                <div className="max-w-7xl mx-auto relative">
+
+                {/* Project Description (Moved down here for readability) */}
+                {project.description && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.8 }}
+                        className="mb-24"
+                    >
+                        <p className="text-xl md:text-2xl lg:text-3xl text-neutral-300 leading-relaxed w-full font-medium">
+                            {project.description}
+                        </p>
+                        
+                        {/* Page break after description */}
+                        <div className="h-px w-full bg-white/10 mt-16" />
+                    </motion.div>
+                )}
 
                 {/* Metrics Grid */}
                 {project.metrics && project.metrics.length > 0 && (
@@ -215,10 +228,8 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                         transition={{ duration: 0.8 }}
                         className="mb-32"
                     >
-                        <div className="max-w-5xl mx-auto">
-                            <div className="prose prose-invert prose-lg md:prose-xl max-w-none prose-reading prose-headings:font-heading prose-headings:font-bold prose-headings:text-white prose-a:text-white prose-a:underline prose-img:rounded-3xl">
-                                <div dangerouslySetInnerHTML={{ __html: content }} />
-                            </div>
+                        <div className="max-w-7xl mx-auto">
+                            <RichText content={content} />
                         </div>
                     </motion.section>
                 )}
@@ -284,7 +295,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 1 }}
-                        className="mt-60 border-t border-white/5 pt-32 max-w-5xl mx-auto"
+                        className="mt-60 border-t border-white/5 pt-32 max-w-7xl mx-auto"
                     >
                         <div className="text-center">
                             <span className="text-xs font-bold text-neutral-500 uppercase tracking-[0.4em] mb-8 block">Up Next</span>

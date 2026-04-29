@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
+import { RichText } from "./RichText";
 
 interface CaseStudyReaderProps {
     projectId: string;
@@ -31,7 +32,7 @@ export function CaseStudyReader({
     nextCaseStudy,
 }: CaseStudyReaderProps) {
     const [isScrolled, setIsScrolled] = useState(false);
-    const articleRef = useRef<HTMLElement>(null);
+    const articleRef = useRef<HTMLDivElement>(null);
 
     const { scrollY } = useScroll();
     const { scrollYProgress } = useScroll();
@@ -82,13 +83,13 @@ export function CaseStudyReader({
 
             {/* ── Header (Title & Description) ── */}
             <section className="px-6 md:px-12 pt-24 pb-8">
-                <div className="max-w-5xl mx-auto">
+                <div className="max-w-7xl mx-auto">
                     <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] text-white mb-8">
                         {title}
                     </h1>
 
                     {description && (
-                        <p className="text-xl md:text-2xl text-neutral-400 leading-relaxed max-w-3xl">
+                        <p className="text-lg md:text-xl text-neutral-400 leading-relaxed max-w-4xl">
                             {description}
                         </p>
                     )}
@@ -97,8 +98,8 @@ export function CaseStudyReader({
 
             {/* ── Cover Image (Theater) ── */}
             {coverImage && (
-                <section className="px-6 md:px-12 py-12">
-                    <div className="max-w-5xl mx-auto">
+                <section className="px-6 md:px-12 py-12 relative z-10">
+                    <div className="max-w-7xl mx-auto">
                         <div className="relative aspect-video w-full overflow-hidden rounded-[32px] md:rounded-[48px] bg-black border border-white/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]">
                             <img
                                 src={coverImage}
@@ -111,18 +112,16 @@ export function CaseStudyReader({
             )}
 
             {/* ── Horizontal Divider ── */}
-            <div className="max-w-5xl mx-auto px-6 md:px-12">
+            <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
                 <div className="h-px bg-white/10" />
             </div>
 
             {/* ── Article body ── */}
-            <section className="px-6 md:px-12 pb-32">
-                <div className="max-w-5xl mx-auto">
-                    <article
-                        ref={articleRef}
-                        className="prose prose-invert prose-lg md:prose-xl max-w-none prose-reading prose-headings:font-heading prose-headings:font-bold prose-headings:text-white prose-a:text-white prose-a:underline prose-img:rounded-3xl"
-                        dangerouslySetInnerHTML={{ __html: content }}
-                    />
+            <section className="px-6 md:px-12 pb-32 relative z-10">
+                <div className="max-w-7xl mx-auto">
+                    <div ref={articleRef}>
+                        <RichText content={content} as="article" />
+                    </div>
                 </div>
             </section>
 
