@@ -30,8 +30,8 @@ export function FeaturedProjectGallery({ projects }: { projects: Project[] }) {
                 <h3 className="text-xl sm:text-2xl font-bold text-white/90 mb-6 md:mb-8 font-heading tracking-tight drop-shadow-md">
                     Coming Up Next
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                    {projects.slice(0, 2).map((project, index) => (
+                <div className={projects.length < 3 ? "grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12"}>
+                    {projects.slice(0, 3).map((project, index) => (
                         <div key={project.id} className="relative z-0 hover:z-[100]">
                             <motion.div
                                 initial={{ opacity: 0, y: 30 }}
@@ -39,7 +39,7 @@ export function FeaturedProjectGallery({ projects }: { projects: Project[] }) {
                                 viewport={{ once: true }}
                                 animate={{
                                     opacity: hoveredId && hoveredId !== project.id ? 0.3 : 1,
-                                    scale: hoveredId && hoveredId !== project.id ? 0.9 : 1
+                                    scale: hoveredId && hoveredId !== project.id ? 0.95 : 1
                                 }}
                                 transition={{
                                     duration: 0.6,

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, VolumeX, Volume2 } from "lucide-react";
@@ -16,29 +16,11 @@ interface ProjectCard_HomeProps {
 
 export function ProjectCard_Home({ project, onHoverStart, onHoverEnd, isHovered }: ProjectCard_HomeProps) {
     const [isFocused, setIsFocused] = useState(false);
-    const [progress, setProgress] = useState(0);
     const [isMuted, setIsMuted] = useState(true);
     const videoRef = useRef<HTMLVideoElement>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [loopKey, setLoopKey] = useState(0);
-    const [dominantColors, setDominantColors] = useState<[string, string, string]>(["#4f46e5", "#7c3aed", "#2563eb"]);
-
-    // Mobile scroll-to-pop logic
-    const cardRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: cardRef,
-        offset: ["start end", "center center", "end start"]
-    });
-
-    const mobileScale = useTransform(scrollYProgress,
-        [0, 0.5, 1],
-        [0.9, 1.1, 0.9]
-    );
-
-    const mobileY = useTransform(scrollYProgress,
-        [0, 0.5, 1],
-        [20, 0, -20]
-    );
+    const [dominantColors, setDominantColors] = useState<[string, string, string]>(["rgba(255,255,255,0.1)", "rgba(255,255,255,0.1)", "rgba(255,255,255,0.1)"]);
 
     // Extract dominant colors from thumbnail on mount
     useEffect(() => {
@@ -76,14 +58,13 @@ export function ProjectCard_Home({ project, onHoverStart, onHoverEnd, isHovered 
         } else {
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
             setIsFocused(false);
-            setProgress(0);
         }
         return () => {
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
         };
     }, [isHovered]);
 
-    // Video Loop Engine (7 seconds)
+    // Video Loop Engine (7 seconds or Loom)
     useEffect(() => {
         let interval: NodeJS.Timeout;
 
@@ -104,21 +85,6 @@ export function ProjectCard_Home({ project, onHoverStart, onHoverEnd, isHovered 
                         }
                     });
                 }
-
-                const duration = 7000;
-                const start = Date.now();
-
-                interval = setInterval(() => {
-                    if (!videoRef.current) return;
-
-                    const elapsed = Date.now() - start;
-                    const newProgress = (elapsed % duration) / duration;
-                    setProgress(newProgress * 100);
-
-                    if (videoRef.current.currentTime >= 30) {
-                        videoRef.current.currentTime = 0;
-                    }
-                }, 16);
             }
         }
         return () => {
@@ -130,260 +96,160 @@ export function ProjectCard_Home({ project, onHoverStart, onHoverEnd, isHovered 
         };
     }, [isFocused, project.video]);
 
-    const glowColor1 = dominantColors[0];
-    const glowColor2 = dominantColors[1];
-
-    const toRgba = (color: string, alpha: number): string => {
-        if (color.startsWith('#')) {
-            const r = parseInt(color.slice(1, 3), 16);
-            const g = parseInt(color.slice(3, 5), 16);
-            const b = parseInt(color.slice(5, 7), 16);
-            return `rgba(${r},${g},${b},${alpha})`;
-        }
-        return color.replace('rgb(', 'rgba(').replace(')', `,${alpha})`);
-    };
-
-    const animId = `cg${project.id.replace(/[^a-z0-9]/gi, '').slice(0, 10)}`;
-    const spinCSS = `
-        @keyframes ${animId}-spin {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to   { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-    `;
-
-    const conicGrad = `conic-gradient(
-        from 0deg,
-        ${toRgba(glowColor1, 0.55)},
-        ${toRgba(glowColor2, 0.4)},
-        ${toRgba(glowColor1, 0.55)},
-        ${toRgba(glowColor2, 0.4)},
-        ${toRgba(glowColor1, 0.55)}
-    )`;
+    const glowColor = dominantColors[0];
 
     return (
-        <Link href={`/work/${project.id}?from=home`} className="block w-full h-auto relative">
-            <style>{spinCSS}</style>
-
-            {/* === Outer glow halo === */}
-            <div
-                className="absolute pointer-events-none"
-                style={{
-                    inset: '-40px',
-                    borderRadius: '80px',
-                    opacity: isHovered ? 1 : 0,
-                    transition: 'opacity 0.7s ease',
-                    zIndex: 1,
-                    overflow: 'hidden',
-                    filter: 'blur(22px)',
-                }}
-            >
-                <div style={{
-                    position: 'absolute',
-                    top: '50%', left: '50%',
-                    width: '200%', height: '200%',
-                    background: conicGrad,
-                    animation: isHovered ? `${animId}-spin 12s linear infinite` : 'none',
-                }} />
-            </div>
-
-            {/* === CARD ===
-                Height is the ONLY layout-triggering animation.
-                Theater + meta are absolute-positioned → opacity-only → GPU composited, no reflow.
-            */}
-            <motion.div
-                ref={cardRef}
+        <Link href={`/work/${project.id}?from=home`} className="block w-full h-auto relative group z-0 hover:z-50">
+            {/* Main Card Container - 1:1 Aspect Ratio */}
+            <div 
+                className={cn(
+                    "relative w-full aspect-square rounded-[24px] md:rounded-[32px] overflow-hidden bg-neutral-900 flex flex-col transition-all duration-500 transform-gpu",
+                )}
                 onMouseEnter={onHoverStart}
                 onMouseLeave={onHoverEnd}
-                className="relative w-full rounded-[40px] overflow-hidden cursor-pointer bg-neutral-900 group transform-gpu"
-                animate={{
-                    height: isFocused ? 480 : 380,
-                    scale: isHovered ? 1.05 : 1,
-                    zIndex: isHovered ? 100 : 1,
-                    boxShadow: isHovered
-                        ? "0 40px 100px -20px rgba(0, 0, 0, 0.9), 0 0 80px rgba(255, 255, 255, 0.05)"
-                        : "none"
-                }}
                 style={{
-                    willChange: 'transform',
-                    scale: typeof window !== 'undefined' && window.innerWidth < 768 ? mobileScale : undefined,
-                    y: typeof window !== 'undefined' && window.innerWidth < 768 ? mobileY : 0,
+                    border: isHovered ? `1px solid ${glowColor}` : '1px solid rgba(255,255,255,0.05)',
+                    boxShadow: isHovered ? `0 0 60px -15px ${glowColor}` : '0 20px 40px -10px rgba(0,0,0,0.5)',
                 }}
-                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             >
-                {/* Gradient glow overlay on hover */}
-                <div className={cn(
-                    "absolute -inset-[1px] bg-gradient-to-br from-white/20 via-transparent to-white/10 opacity-0 transition-opacity duration-700 pointer-events-none z-50",
-                    isHovered && "opacity-100"
-                )} />
-
-                {/* LAYER 0: Thumbnail — fades out on focus */}
-                <div className="absolute inset-0 z-0">
-                    {project.image && (
-                        <Image
-                            src={project.image}
-                            alt={project.title}
-                            fill
-                            unoptimized={project.image.toLowerCase().endsWith('.gif')}
-                            className={cn(
-                                "object-cover object-center transition-opacity duration-700 ease-out",
-                                isFocused ? "opacity-0" : "opacity-100"
-                            )}
-                            priority
-                        />
-                    )}
+                {/* === TOP 66.6% : THUMBNAIL / VIDEO === */}
+                <div className="relative h-[66.666%] w-full overflow-hidden bg-black shrink-0">
+                    
+                    {/* Default Image Thumbnail */}
                     <div className={cn(
-                        "absolute inset-x-[-1px] bottom-[-1px] h-[85%] bg-gradient-to-t from-black via-black/40 to-transparent transition-opacity duration-700 rounded-b-[40px]",
-                        isFocused ? "opacity-0" : "opacity-100"
-                    )} />
-                </div>
+                        "absolute inset-0 z-0 transition-opacity duration-700 ease-out",
+                        isFocused && project.video ? "opacity-0" : "opacity-100"
+                    )}>
+                        {project.image && (
+                            <Image
+                                src={project.image}
+                                alt={project.title}
+                                fill
+                                unoptimized={project.image.toLowerCase().endsWith('.gif')}
+                                className="object-cover object-center"
+                                priority
+                            />
+                        )}
+                    </div>
 
-                {/* LAYER 1: Video Theater — absolute + opacity only, zero layout impact */}
-                <AnimatePresence>
-                    {isFocused && (
-                        <motion.div
-                            key={loopKey}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.6, ease: "easeOut" }}
-                            className="absolute inset-0 z-10 bg-black"
-                            onClick={e => e.preventDefault()} // stop Link navigation when clicking the theater
-                        >
-                            {project.video && project.video.includes("loom.com/share") ? (
-                                <div className="relative w-full h-full">
-                                    <iframe
-                                        key={`loom-${isMuted}`}
-                                        src={project.video.replace("loom.com/share/", "loom.com/embed/") + `?autoplay=1&muted=${isMuted ? 1 : 0}&preload=1&hide_owner=true&hide_share=true&hide_title=true&hide_embed_code=true&hide_speed=true&hideEmbedTopBar=true`}
-                                        frameBorder="0"
-                                        allowFullScreen
-                                        allow="autoplay"
+                    {/* Video Player (Fades in on focus) */}
+                    <AnimatePresence>
+                        {isFocused && project.video && (
+                            <motion.div
+                                key={loopKey}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.6, ease: "easeOut" }}
+                                className="absolute inset-0 z-10 bg-black"
+                                onClick={e => e.preventDefault()}
+                            >
+                                {project.video.includes("loom.com/share") ? (
+                                    <div className="relative w-full h-full">
+                                        <iframe
+                                            key={`loom-${isMuted}`}
+                                            src={project.video.replace("loom.com/share/", "loom.com/embed/") + `?autoplay=1&muted=${isMuted ? 1 : 0}&preload=1&hide_owner=true&hide_share=true&hide_title=true&hide_embed_code=true&hide_speed=true&hideEmbedTopBar=true`}
+                                            frameBorder="0"
+                                            allowFullScreen
+                                            allow="autoplay"
+                                            className="h-full w-full object-cover pointer-events-none"
+                                        />
+                                        <div className="absolute inset-x-0 top-0 bottom-16 z-10" />
+                                    </div>
+                                ) : (
+                                    <video
+                                        ref={videoRef}
+                                        src={project.video}
+                                        muted={isMuted}
+                                        playsInline
+                                        loop
                                         className="h-full w-full object-cover"
                                     />
-                                    {/* Overlay only covers top so bottom mute button stays clickable */}
-                                    <div className="absolute inset-x-0 top-0 bottom-16 z-10" />
-                                </div>
-                            ) : project.video ? (
-                                <video
-                                    ref={videoRef}
-                                    src={project.video}
-                                    muted={isMuted}
-                                    playsInline
-                                    className="h-full w-full object-cover"
-                                />
-                            ) : (
-                                <Image
-                                    src={project.image || ""}
-                                    alt={project.title}
-                                    fill
-                                    unoptimized={(project.image || "").toLowerCase().endsWith('.gif')}
-                                    className="object-cover object-center"
-                                />
-                            )}
+                                )}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Mute button + progress bar — z-40 so they're above the meta section */}
-                <AnimatePresence>
-                    {isFocused && project.video && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="absolute z-40 pointer-events-none inset-0"
-                        >
-                            {/* Mute / Unmute toggle */}
-                            <button
-                                onClick={e => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    if (videoRef.current) videoRef.current.muted = !isMuted;
-                                    setIsMuted(prev => !prev);
-                                }}
-                                className="absolute top-4 right-4 pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white/80 text-[10px] uppercase tracking-widest font-semibold hover:bg-black/70 transition-colors"
+                    {/* Mute Button Overlay */}
+                    <AnimatePresence>
+                        {isFocused && project.video && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="absolute z-40 pointer-events-none inset-0"
                             >
-                                {isMuted
-                                    ? <><VolumeX className="w-3 h-3" /> Unmute</>
-                                    : <><Volume2 className="w-3 h-3" /> Mute</>
-                                }
-                            </button>
+                                <button
+                                    onClick={e => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        if (videoRef.current) videoRef.current.muted = !isMuted;
+                                        setIsMuted(prev => !prev);
+                                    }}
+                                    className="absolute top-4 right-4 sm:top-5 sm:right-5 pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white/80 text-[10px] uppercase tracking-widest font-semibold hover:bg-black/70 transition-colors"
+                                >
+                                    {isMuted
+                                        ? <><VolumeX className="w-3 h-3" /> Unmute</>
+                                        : <><Volume2 className="w-3 h-3" /> Mute</>
+                                    }
+                                </button>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
-                            {/* Progress bar — only for direct video, not Loom */}
-                            {!project.video.includes("loom.com/share") && (
-                                <div className="absolute bottom-6 left-8 right-8 h-[3px] bg-white/10 rounded-full overflow-hidden backdrop-blur-md pointer-events-none">
-                                    <motion.div
-                                        className="h-full bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)]"
-                                        style={{ width: `${progress}%` }}
-                                    />
-                                </div>
-                            )}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                    {/* Case Studies Chip (Top Right) */}
+                    {project.caseStudyCount && project.caseStudyCount > 0 && !(isFocused && project.video) ? (
+                        <div className="absolute top-4 right-4 sm:top-5 sm:right-5 bg-white/10 backdrop-blur-md border border-white/20 text-white px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wider shadow-xl z-20 pointer-events-none transition-opacity duration-300">
+                            {project.caseStudyCount} Case Studies
+                        </div>
+                    ) : null}
+                </div>
 
-                {/* LAYER 2: Meta — absolute at bottom, zero layout impact */}
-                <div className="absolute bottom-0 left-0 right-0 z-30">
-                    <div className={cn(
-                        "flex flex-col transition-all duration-700 ease-in-out",
-                        isFocused
-                            ? "bg-black px-4 md:px-6 pt-4 pb-4 md:pb-8"
-                            : "bg-transparent px-4 md:px-6 pb-4 md:pb-8"
-                    )}>
-                        {/* Title */}
-                        <div className="min-h-[calc(3*1.25*1rem)] md:min-h-[calc(2*1.3*1.5rem)] flex items-center">
-                            <motion.h3
-                                className="font-heading font-semibold text-white leading-[1.25] tracking-tight line-clamp-3"
-                                style={{ originX: 0, originY: 1 }}
-                                animate={{
-                                    fontSize: isFocused ? "calc(1rem + 0.5vw)" : "calc(1.8rem + 1vw)",
-                                }}
-                                transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                            >
-                                {project.title}
-                            </motion.h3>
+                {/* === BOTTOM 33.3% : CONTENT === */}
+                {/* We use inline-size container to make inner text and spacing scale perfectly with the card's exact pixel width */}
+                <div 
+                    className="relative h-[33.333%] w-full bg-neutral-900 flex flex-col justify-between p-4 sm:p-5 md:p-6 z-30 overflow-hidden"
+                    style={{ containerType: 'inline-size' }}
+                >
+                    
+                    {/* Logo & Title */}
+                    <div className="flex flex-col gap-2 sm:gap-3 shrink-0">
+                        {project.clientLogo ? (
+                            <div className="h-4 sm:h-5 md:h-6 w-auto flex-shrink-0 origin-left">
+                                <img src={project.clientLogo} alt={`${project.title} Logo`} className="h-full w-auto object-contain brightness-0 invert" />
+                            </div>
+                        ) : (
+                            <div className="h-1" /> // Spacer if no logo
+                        )}
+                        
+                        {/* Title: Size uses cqw (Container Query Width) so it scales linearly with the card size without wrapping limits */}
+                        <h3 className="font-heading font-bold text-white leading-[1.15] text-[6cqw] tracking-tight">
+                            {project.title}
+                        </h3>
+                    </div>
+
+                    {/* Categories & Action Button */}
+                    <div className="flex items-end justify-between gap-4 mt-auto pt-2 shrink-0">
+                        {/* Categories */}
+                        <div className="flex flex-wrap items-center text-[2.5cqw] font-medium text-white/60 uppercase tracking-widest leading-tight">
+                            {project.category && project.category.split(',').map((cat, idx, arr) => (
+                                <span key={cat.trim()} className="flex items-center">
+                                    {cat.trim()}
+                                    {idx < arr.length - 1 && (
+                                        <span className="text-white/30 mx-1.5 sm:mx-2 flex items-center">•</span>
+                                    )}
+                                </span>
+                            ))}
                         </div>
 
-                        {/* Fading Metadata */}
-                        <AnimatePresence mode="wait">
-                            {isFocused && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    transition={{ duration: 0.3, ease: "easeOut" }}
-                                    className="mt-1 flex flex-col gap-2"
-                                >
-                                    <p className="text-xs md:text-sm text-neutral-400 font-medium leading-relaxed w-full line-clamp-3 md:line-clamp-2">
-                                        {project.description}
-                                    </p>
-
-                                    <div className="flex items-center justify-between gap-4 pt-1">
-                                        <div className="flex items-center gap-3 flex-wrap">
-                                            {project.category && project.category.split(',').map((cat: string) => (
-                                                <span key={cat.trim()} className="px-4 py-2 rounded-full border border-white/20 bg-white/5 text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-white/90 font-bold whitespace-nowrap backdrop-blur-sm shadow-sm transition-colors hover:bg-white/10">
-                                                    {cat.trim()}
-                                                </span>
-                                            ))}
-                                            {project.tags.slice(0, 1).map((tag: string) => (
-                                                <span key={tag} className="px-4 py-2 rounded-full border border-white/10 bg-white/5 text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-white/70 font-bold whitespace-nowrap backdrop-blur-sm">
-                                                    {tag}
-                                                </span>
-                                            ))}
-                                        </div>
-                                        <div className="flex-shrink-0">
-                                            <div className="group/btn w-12 h-12 md:w-14 md:h-14 rounded-full bg-white flex items-center justify-center text-black shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all hover:scale-110 hover:bg-neutral-100">
-                                                <ArrowRight className="w-6 h-6 md:w-7 md:h-7 -rotate-45 transition-transform group-hover/btn:rotate-0" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        {/* Action Arrow */}
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-white flex items-center justify-center text-black shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-transform duration-300 group-hover:scale-110 flex-shrink-0">
+                            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 -rotate-45 transition-transform group-hover:rotate-0" />
+                        </div>
                     </div>
                 </div>
-            </motion.div>
+            </div>
         </Link>
     );
 }

@@ -153,12 +153,23 @@ export default function MediaPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
                     {filteredMedia.map((item) => (
                         <div key={item.filename} className="group flex flex-col gap-2">
-                            <div className="relative aspect-square rounded-xl overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center p-4">
+                            <div 
+                                className="relative aspect-square rounded-xl overflow-hidden border border-white/10 flex items-center justify-center p-4"
+                                style={{
+                                    backgroundImage: `url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="10" height="10" fill="rgba(255,255,255,0.05)"/><rect x="10" width="10" height="10" fill="rgba(255,255,255,0.1)"/><rect y="10" width="10" height="10" fill="rgba(255,255,255,0.1)"/><rect x="10" y="10" width="10" height="10" fill="rgba(255,255,255,0.05)"/></svg>')`,
+                                    backgroundSize: '20px 20px',
+                                    backgroundColor: 'rgba(255,255,255,0.02)'
+                                }}
+                            >
                                 <img 
                                     src={item.url} 
                                     alt={item.filename} 
-                                    className="max-w-full max-h-full object-contain"
+                                    className={`max-w-full max-h-full object-contain ${item.filename.toLowerCase().endsWith('.svg') ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : ''}`}
                                     loading="lazy"
+                                    onError={(e) => {
+                                        // Basic fallback if image is totally broken
+                                        (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ff4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+                                    }}
                                 />
                                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                     <button 
