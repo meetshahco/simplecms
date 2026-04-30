@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProjectCard_Home } from "./ProjectCard_Home";
 import type { Project } from "@/lib/cms/storage";
@@ -22,7 +22,19 @@ export function FeaturedProjectGallery({ projects }: { projects: Project[] }) {
 
     const activeProject = projects[activeIndex];
 
-
+    // Touch swipe support
+    const touchStartX = useRef<number | null>(null);
+    const handleTouchStart = (e: React.TouchEvent) => {
+        touchStartX.current = e.touches[0].clientX;
+    };
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        if (touchStartX.current === null) return;
+        const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+        const threshold = 50;
+        if (deltaX < -threshold) goRight();
+        else if (deltaX > threshold) goLeft();
+        touchStartX.current = null;
+    };
 
     return (
         <section 
@@ -59,7 +71,11 @@ export function FeaturedProjectGallery({ projects }: { projects: Project[] }) {
             </div>
             
             {/* Carousel Container */}
-            <div className="relative w-full group">
+            <div 
+                className="relative w-full group"
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+            >
                 {/* Pagination Controls */}
                 <button 
                     onClick={goLeft}
