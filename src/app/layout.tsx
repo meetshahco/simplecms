@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Outfit, Caveat } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -40,6 +40,13 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -53,7 +60,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${outfit.variable} ${caveat.variable} antialiased bg-[#0a0a0a] text-foreground`}
+        className={`${inter.variable} ${outfit.variable} ${caveat.variable} antialiased bg-[#0a0a0a] text-foreground overflow-x-hidden`}
       >
         <Providers>
           <ContactAnimationProvider initialContactCta={splashPlayed}>

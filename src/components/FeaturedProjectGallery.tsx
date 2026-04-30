@@ -38,7 +38,7 @@ export function FeaturedProjectGallery({ projects }: { projects: Project[] }) {
 
     return (
         <section 
-            className="relative py-10 md:py-24 w-full overflow-x-clip"
+            className="relative py-10 md:py-24 w-full overflow-x-hidden"
             style={{
                 // Mobile: show 1 active card + peek of next
                 // cardH = (100vw - 2*24px - 1*12px) * 1 / 1.333  →  active fills most of width
@@ -72,22 +72,22 @@ export function FeaturedProjectGallery({ projects }: { projects: Project[] }) {
             
             {/* Carousel Container */}
             <div 
-                className="relative w-full group"
+                className="relative w-full group touch-pan-y"
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
             >
-                {/* Pagination Controls */}
+                {/* Pagination Controls - Hidden on Mobile */}
                 <button 
                     onClick={goLeft}
                     disabled={activeIndex === 0}
-                    className="absolute left-4 top-[calc(var(--card-h)/2)] -translate-y-1/2 z-40 w-10 h-10 md:w-12 md:h-12 bg-black/50 hover:bg-black/80 disabled:opacity-0 disabled:cursor-not-allowed backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute left-4 top-[calc(var(--card-h)/2)] -translate-y-1/2 z-40 w-10 h-10 md:w-12 md:h-12 bg-black/50 hover:bg-black/80 disabled:opacity-0 disabled:cursor-not-allowed backdrop-blur-md border border-white/10 rounded-full hidden md:flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                     <ChevronLeft className="w-6 h-6" />
                 </button>
                 <button 
                     onClick={goRight}
                     disabled={activeIndex >= projects.length - 1}
-                    className="absolute right-4 top-[calc(var(--card-h)/2)] -translate-y-1/2 z-40 w-10 h-10 md:w-12 md:h-12 bg-black/50 hover:bg-black/80 disabled:opacity-0 disabled:cursor-not-allowed backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute right-4 top-[calc(var(--card-h)/2)] -translate-y-1/2 z-40 w-10 h-10 md:w-12 md:h-12 bg-black/50 hover:bg-black/80 disabled:opacity-0 disabled:cursor-not-allowed backdrop-blur-md border border-white/10 rounded-full hidden md:flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                     <ChevronRight className="w-6 h-6" />
                 </button>
