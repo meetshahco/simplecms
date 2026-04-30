@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
-@plugin "@tailwindcss/container-queries";
+
 
 @theme inline {
   --color-background: var(--background);
