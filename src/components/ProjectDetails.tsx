@@ -216,21 +216,21 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                     <section className="px-6 sm:px-10 md:px-[53px] pt-12 pb-32">
                         <div className="w-full relative">
 
-                {/* Project Description (Moved down here for readability) */}
+                {/* Project Description - Editorial Lead Treatment */}
                 {project.description && (
                     <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.8 }}
-                        className="mb-24"
+                        className="mb-24 relative pl-8 border-l-2 border-white/10"
                     >
-                        <p className="text-xl md:text-2xl lg:text-3xl text-neutral-300 leading-relaxed w-full font-medium">
+                        <p className="text-lg md:text-xl lg:text-2xl text-neutral-400 leading-relaxed w-full font-medium italic italic-quote">
                             {project.description}
                         </p>
                         
                         {/* Page break after description */}
-                        <div className="h-px w-full bg-white/10 mt-16" />
+                        <div className="h-px w-32 bg-white/10 mt-16" />
                     </motion.div>
                 )}
 
