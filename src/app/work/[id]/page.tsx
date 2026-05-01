@@ -1,8 +1,7 @@
-import { getProject, getProjectContent, listCaseStudies, listProjects } from "@/lib/cms/storage";
+import { getProject, getProjectContent, listCaseStudies, listProjects, getCaseStudyContent } from "@/lib/cms/storage";
 export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { ProjectDetails } from "@/components/ProjectDetails";
-import { FooterMinimal } from "@/components/Footer";
 import { Suspense } from "react";
 
 interface PageProps {
@@ -23,14 +22,21 @@ export default async function ProjectPage({ params }: PageProps) {
         notFound();
     }
 
+    // Filter only published case studies
+    const publishedStudies = allCaseStudies.filter(s => s.status === 'published');
+
+    // Fetch content for each case study
+    const caseStudiesWithContent = await Promise.all(
+        publishedStudies.map(async (study) => ({
+            ...study,
+            content: await getCaseStudyContent(study.slug)
+        }))
+    );
+
     // Identify next project
     const currentIndex = allProjects.findIndex(p => p.id === id);
     const nextProject = allProjects[(currentIndex + 1) % allProjects.length];
-    // Don't show next project if it's the same one (only one project exists)
     const nextProjectToDisplay = allProjects.length > 1 ? nextProject : null;
-
-    // Filter only published case studies for front-end
-    const publishedCaseStudies = allCaseStudies.filter(s => s.status === 'published');
 
     return (
         <>
@@ -38,11 +44,10 @@ export default async function ProjectPage({ params }: PageProps) {
                 <ProjectDetails 
                     project={project} 
                     content={content} 
-                    caseStudies={publishedCaseStudies} 
+                    caseStudies={caseStudiesWithContent} 
                     nextProject={nextProjectToDisplay}
                 />
             </Suspense>
-            <FooterMinimal />
         </>
     );
 }
