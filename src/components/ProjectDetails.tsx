@@ -43,31 +43,36 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
     const leftPaneRef = useRef<HTMLDivElement>(null);
     const hasCaseStudies = caseStudies.length > 0;
     
-    const { scrollY: leftScrollY, scrollYProgress: leftScrollYProgress } = useScroll({
-        container: hasCaseStudies ? leftPaneRef : undefined
+    // Separate scroll trackers for dual-pane vs single-pane modes
+    const { scrollY: windowScrollY, scrollYProgress: windowScrollYProgress } = useScroll();
+    const { scrollY: paneScrollY, scrollYProgress: paneScrollYProgress } = useScroll({
+        container: leftPaneRef
     });
+
+    const activeScrollY = hasCaseStudies ? paneScrollY : windowScrollY;
+    const activeScrollYProgress = hasCaseStudies ? paneScrollYProgress : windowScrollYProgress;
+
     const [isScrolled, setIsScrolled] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    // Navbar transition threshold - linked to left pane scroll
-    const navbarOpacity = useTransform(leftScrollY, [0, 50], [0, 1]);
-    const navbarBlur = useTransform(leftScrollY, [0, 50], [0, 16]);
-    const titleOpacity = useTransform(leftScrollY, [300, 400], [0, 1]);
-    const titleY = useTransform(leftScrollY, [300, 400], [10, 0]);
+    // Navbar transition threshold - linked to active scroll state
+    const navbarOpacity = useTransform(activeScrollY, [0, 50], [0, 1]);
+    const navbarBlur = useTransform(activeScrollY, [0, 50], [0, 16]);
+    const titleOpacity = useTransform(activeScrollY, [300, 400], [0, 1]);
+    const titleY = useTransform(activeScrollY, [300, 400], [10, 0]);
 
-    const scaleX = useSpring(leftScrollYProgress, {
+    const scaleX = useSpring(activeScrollYProgress, {
         stiffness: 200,
         damping: 40,
         restDelta: 0.001,
     });
 
     useEffect(() => {
-        return leftScrollY.on("change", (latest) => {
+        return activeScrollY.on("change", (latest) => {
             setIsScrolled(latest > 50);
         });
-    }, [leftScrollY]);
+    }, [activeScrollY]);
 
-    const hasCaseStudies = caseStudies.length > 0;
 
     const isLoom = project.video?.includes("loom.com/share");
     const embedUrl = isLoom ? project.video.replace("loom.com/share/", "loom.com/embed/") + "?autoplay=1&muted=1&preload=1&hide_owner=true&hide_share=true&hide_title=true&hide_embed_code=true" : null;
