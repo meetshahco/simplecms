@@ -41,8 +41,10 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
     const backLabel = from === "home" ? "Home" : "Work";
 
     const leftPaneRef = useRef<HTMLDivElement>(null);
+    const hasCaseStudies = caseStudies.length > 0;
+    
     const { scrollY: leftScrollY, scrollYProgress: leftScrollYProgress } = useScroll({
-        container: leftPaneRef
+        container: hasCaseStudies ? leftPaneRef : undefined
     });
     const [isScrolled, setIsScrolled] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -103,12 +105,12 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
             </motion.nav>
 
             {/* ── Main Layout Container ── */}
-            <div className="flex flex-col lg:flex-row w-full lg:h-screen lg:overflow-hidden bg-black">
+            <div className={`flex flex-col lg:flex-row w-full bg-black ${hasCaseStudies ? 'lg:h-screen lg:overflow-hidden' : 'min-h-screen'}`}>
                 
                 {/* ── Left Column (Main Story) ── */}
                 <div 
                     ref={leftPaneRef}
-                    className={`w-full flex flex-col hide-scrollbar ${hasCaseStudies ? 'lg:w-[70%] lg:h-screen lg:overflow-y-auto border-r border-white/5' : 'w-full'}`}
+                    className={`w-full flex flex-col hide-scrollbar ${hasCaseStudies ? 'lg:w-[70%] lg:h-screen lg:overflow-y-auto border-r border-white/5' : 'w-full min-h-screen'}`}
                 >
                     
                     {/* Cinematic Hero Section - Contained in 70% column */}
