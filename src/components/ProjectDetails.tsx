@@ -352,6 +352,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                         </div>
                     </div>
                 </aside>
+                )}
             </div>
         </div>
     );
