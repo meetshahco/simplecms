@@ -80,7 +80,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                     backdropFilter: useTransform(navbarBlur, (b) => `blur(${b}px)`),
                     borderBottom: useTransform(navbarOpacity, (o) => `1px solid rgba(255,255,255,${o * 0.06})`),
                 }}
-                className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 border-b border-white/0"
+                className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 sm:px-10 md:px-[53px] py-5 border-b border-white/0"
             >
                 <div className="flex items-center gap-8">
                     <Link href={backHref} className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors group">
@@ -129,13 +129,20 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.2 }}
-                            className="flex flex-col items-start gap-6"
+                            className="flex flex-col items-start gap-4 md:gap-6"
                         >
-                            <span className="px-5 py-2 rounded-full border border-white/10 bg-white/5 text-[10px] uppercase tracking-[0.25em] text-white/70 font-bold backdrop-blur-xl">
-                                {project.category}
-                            </span>
+                            <div className="flex items-center flex-wrap text-[10px] sm:text-xs font-medium text-white/80 tracking-[0.2em] leading-none shrink-0 uppercase">
+                                {project.category && project.category.split(',').map((cat, idx, arr) => (
+                                    <span key={cat.trim()} className="flex items-center">
+                                        {cat.trim()}
+                                        {idx < arr.length - 1 && (
+                                            <span className="text-white/30 text-[8px] flex items-center mx-3">•</span>
+                                        )}
+                                    </span>
+                                ))}
+                            </div>
                             
-                            <h1 className="font-heading text-4xl md:text-5xl lg:text-7xl font-bold text-white tracking-tight leading-[1.1] py-2">
+                            <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white tracking-tight leading-[1.1] py-2">
                                 {project.title}
                             </h1>
                         </motion.div>
@@ -176,8 +183,8 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
 
 
                     {/* Main Content Area */}
-                    <section className="px-6 md:px-12 pt-12 pb-32">
-                        <div className="max-w-4xl mx-auto relative">
+                    <section className="pl-6 sm:pl-10 md:pl-[53px] pr-6 sm:pr-10 lg:pr-20 pt-12 pb-32">
+                        <div className="w-full relative">
 
                 {/* Project Description (Moved down here for readability) */}
                 {project.description && (
@@ -279,12 +286,12 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                                 <div className="text-left">
                                     <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.4em] mb-6 block">Up Next</span>
                                     <Link href={`/work/${nextProject.id}`} className="group inline-block">
-                                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-10 tracking-tight transition-all duration-700 hover:scale-[1.01] group-hover:text-white/70 leading-[1.1]">
+                                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-10 tracking-tight transition-all duration-700 hover:scale-[1.01] group-hover:text-white/70 leading-[1.1]">
                                             {nextProject.title}
                                         </h2>
                                         <div className="flex items-center text-white group">
-                                            <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-black group-hover:scale-110 transition-all duration-500">
-                                                <ArrowRight className="w-6 h-6" />
+                                            <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-black group-hover:scale-110 transition-all duration-500">
+                                                <ArrowRight className="w-5 h-5" />
                                             </div>
                                         </div>
                                     </Link>
@@ -296,8 +303,8 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                 </div>
 
                 {/* ── Right Column (Sidebar - 30%) ── */}
-                <aside className="hidden lg:flex lg:w-[30%] flex-col sticky top-0 h-screen border-l border-white/0 overflow-hidden bg-black/20">
-                    <div className="h-full flex flex-col pt-32 pb-12 px-8">
+                <aside className="w-full lg:w-[30%] lg:h-screen lg:sticky lg:top-0 border-l border-white/5 bg-neutral-900/30 backdrop-blur-sm">
+                    <div className="h-full flex flex-col pt-32 pb-12 pl-12 pr-6 sm:pr-10 md:pr-[53px]">
                         <div className="flex items-center justify-between mb-8 shrink-0">
                             <h2 className="font-heading text-sm font-bold text-neutral-500 uppercase tracking-[0.3em]">Deep Dives</h2>
                             <div className="px-2 py-0.5 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold text-white/40">
