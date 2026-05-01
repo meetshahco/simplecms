@@ -329,7 +329,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                         </div>
 
                         {/* Sidebar Scroll Area */}
-                        <div className="flex-1 overflow-y-auto pr-2 hide-scrollbar space-y-6">
+                        <div className="flex-1 overflow-y-auto px-4 py-6 -mx-4 hide-scrollbar space-y-8">
                             {caseStudies.map((study, i) => (
                                 <Link key={study.slug} href={`/work/${project.id}/${study.slug}`} className="block group">
                                     <motion.div
