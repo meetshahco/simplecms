@@ -73,6 +73,21 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
         });
     }, [activeScrollY]);
 
+    // Lock body scroll when dual-pane is active to prevent jank
+    useEffect(() => {
+        if (hasCaseStudies && window.innerWidth >= 1024) {
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        };
+    }, [hasCaseStudies]);
+
 
     const isLoom = project.video?.includes("loom.com/share");
     const embedUrl = isLoom ? project.video.replace("loom.com/share/", "loom.com/embed/") + "?autoplay=1&muted=1&preload=1&hide_owner=true&hide_share=true&hide_title=true&hide_embed_code=true" : null;
@@ -110,7 +125,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
             </motion.nav>
 
             {/* ── Main Layout Container ── */}
-            <div className={`flex flex-col lg:flex-row w-full bg-black ${hasCaseStudies ? 'lg:h-screen lg:overflow-hidden' : 'min-h-screen'}`}>
+            <div className={`flex flex-col lg:flex-row w-full bg-black overscroll-none ${hasCaseStudies ? 'lg:h-screen lg:overflow-hidden' : 'min-h-screen'}`}>
                 
                 {/* ── Left Column (Main Story) ── */}
                 <div 
