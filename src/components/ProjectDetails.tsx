@@ -122,7 +122,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,black_90%)] opacity-60" />
                 </div>
 
-                <div className="relative z-10 w-full max-w-7xl flex flex-col items-start gap-8 md:gap-16 px-6 md:px-0">
+                <div className="relative z-10 w-full flex flex-col items-start gap-8 md:gap-16 px-6 sm:px-10 md:px-[53px]">
                     {/* Meta Section - Moved above Theater for better vertical flow and description visibility */}
                     <div className="w-full text-left order-1">
                         <motion.div
@@ -183,7 +183,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
 
 
                     {/* Main Content Area */}
-                    <section className="pl-6 sm:pl-10 md:pl-[53px] pr-6 sm:pr-10 lg:pr-20 pt-12 pb-32">
+                    <section className="px-6 sm:px-10 md:px-[53px] pt-12 pb-32">
                         <div className="w-full relative">
 
                 {/* Project Description (Moved down here for readability) */}
