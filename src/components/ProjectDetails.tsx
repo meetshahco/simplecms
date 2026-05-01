@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Play, ChevronDown, ChevronRight, X, PanelRightClose, PanelRightOpen } from "lucide-react";
+import { ArrowLeft, ArrowRight, Play, ChevronDown, ChevronRight, ChevronLeft, X, PanelRightClose, PanelRightOpen } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
 import type { Project, CaseStudy } from "@/lib/cms/storage";
 import { useState, useEffect, useRef, Suspense } from "react";
@@ -17,6 +17,7 @@ interface ProjectDetailsProps {
     content: string;
     caseStudies: CaseStudyWithContent[];
     nextProject?: Project | null;
+    initialCaseStudySlug?: string | null;
 }
 
 function AnimatedNumber({ value }: { value: string }) {
@@ -38,7 +39,7 @@ function AnimatedNumber({ value }: { value: string }) {
     return <span>{display}{suffix}</span>;
 }
 
-export function ProjectDetails({ project, content, caseStudies, nextProject }: ProjectDetailsProps) {
+export function ProjectDetails({ project, content, caseStudies, nextProject, initialCaseStudySlug = null }: ProjectDetailsProps) {
     const searchParams = useSearchParams();
     const from = searchParams.get("from");
     const backHref = from === "home" ? "/" : "/work";
@@ -56,7 +57,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
     const [isScrolled, setIsScrolled] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
     
-    const [activeCaseStudySlug, setActiveCaseStudySlug] = useState<string | null>(null);
+    const [activeCaseStudySlug, setActiveCaseStudySlug] = useState<string | null>(initialCaseStudySlug);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     const activeCaseStudy = caseStudies?.find(s => s.slug === activeCaseStudySlug);
