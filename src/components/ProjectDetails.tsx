@@ -112,7 +112,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                 >
                     
                     {/* Cinematic Hero Section - Contained in 70% column */}
-                    <section className="relative w-full min-h-[85vh] flex flex-col items-center justify-center pt-24 pb-12 overflow-hidden border-b border-white/5">
+                    <section className="relative w-full min-h-[85vh] flex flex-col items-center justify-start pt-32 pb-12 overflow-hidden border-b border-white/5">
                 {/* Immersive Background Treatment */}
                 <div className="absolute inset-0 z-0 overflow-hidden">
                     {project.image && (
