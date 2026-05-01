@@ -128,7 +128,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,black_90%)] opacity-60" />
                 </div>
 
-                <div className="relative z-10 w-full max-w-7xl flex flex-col items-start gap-8 md:gap-16 px-6 sm:px-10 md:px-[53px]">
+                <div className="relative z-10 w-full flex flex-col items-start gap-8 md:gap-16 pl-6 sm:pl-10 md:pl-[53px] pr-12 lg:pr-24">
                     {/* Meta Section - Moved above Theater for better vertical flow and description visibility */}
                     <div className="w-full text-left order-1">
                         <motion.div
@@ -182,8 +182,8 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
 
 
                     {/* Main Content Area */}
-                    <section className="px-6 sm:px-10 md:px-[53px] pt-12 pb-32">
-                        <div className="max-w-5xl relative">
+                    <section className="pl-6 sm:pl-10 md:pl-[53px] pr-6 sm:pr-10 lg:pr-24 pt-12 pb-32">
+                        <div className="w-full relative">
 
                 {/* Project Description (Moved down here for readability) */}
                 {project.description && (
@@ -240,7 +240,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                         transition={{ duration: 0.8 }}
                         className="mb-32"
                     >
-                        <div className="max-w-7xl mx-auto">
+                        <div className="w-full">
                             <RichText content={content} />
                         </div>
                     </motion.section>
@@ -302,8 +302,8 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                 </div>
 
                 {/* ── Right Column (Sidebar - 30%) ── */}
-                <aside className="w-full lg:w-[30%] lg:h-screen lg:overflow-y-auto flex flex-col hide-scrollbar border-l border-white/0 bg-black/20">
-                    <div className="h-full flex flex-col pt-32 pb-12 pl-8 pr-6 sm:pr-10 md:pr-[53px]">
+                <aside className="w-full lg:w-[30%] lg:h-screen lg:overflow-y-auto flex flex-col hide-scrollbar border-l border-white/5 bg-black/20">
+                    <div className="h-full flex flex-col pt-32 pb-12 pl-12 pr-6 sm:pr-10 md:pr-[53px]">
                         <div className="flex items-center justify-between mb-8 shrink-0">
                             <h2 className="font-heading text-sm font-bold text-neutral-500 uppercase tracking-[0.3em]">Deep Dives</h2>
                             <div className="px-2 py-0.5 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold text-white/40">
