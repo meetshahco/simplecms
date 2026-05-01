@@ -134,7 +134,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                 >
                     
                     {/* Cinematic Hero Section - Contained in 70% column */}
-                    <section className="relative w-full flex flex-col items-center justify-start pt-32 pb-32 border-b border-white/5">
+                    <section className="relative w-full flex flex-col items-center justify-start pt-32 pb-16 border-b border-white/5">
                 {/* Immersive Background Treatment */}
                 <div className="absolute inset-0 z-0 overflow-hidden">
                     {project.image && (
@@ -213,7 +213,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
 
 
                     {/* Main Content Area */}
-                    <section className="px-6 sm:px-10 md:px-[53px] pt-12 pb-32">
+                    <section className="px-6 sm:px-10 md:px-[53px] pt-0 pb-32">
                         <div className="w-full relative">
 
                 {/* Project Description - Editorial Lead Treatment */}
@@ -228,9 +228,6 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                         <p className="text-lg md:text-xl lg:text-2xl text-neutral-400 leading-relaxed w-full font-medium italic italic-quote">
                             {project.description}
                         </p>
-                        
-                        {/* Page break after description */}
-                        <div className="h-px w-32 bg-white/10 mt-16" />
                     </motion.div>
                 )}
 
