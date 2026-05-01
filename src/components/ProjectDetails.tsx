@@ -40,27 +40,30 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
     const backHref = from === "home" ? "/" : "/work";
     const backLabel = from === "home" ? "Home" : "Work";
 
-    const { scrollY, scrollYProgress } = useScroll();
+    const leftPaneRef = useRef<HTMLDivElement>(null);
+    const { scrollY: leftScrollY, scrollYProgress: leftScrollYProgress } = useScroll({
+        container: leftPaneRef
+    });
     const [isScrolled, setIsScrolled] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    // Navbar transition threshold - aligned with CaseStudyReader [0, 50]
-    const navbarOpacity = useTransform(scrollY, [0, 50], [0, 1]);
-    const navbarBlur = useTransform(scrollY, [0, 50], [0, 16]);
-    const titleOpacity = useTransform(scrollY, [300, 400], [0, 1]);
-    const titleY = useTransform(scrollY, [300, 400], [10, 0]);
+    // Navbar transition threshold - linked to left pane scroll
+    const navbarOpacity = useTransform(leftScrollY, [0, 50], [0, 1]);
+    const navbarBlur = useTransform(leftScrollY, [0, 50], [0, 16]);
+    const titleOpacity = useTransform(leftScrollY, [300, 400], [0, 1]);
+    const titleY = useTransform(leftScrollY, [300, 400], [10, 0]);
 
-    const scaleX = useSpring(scrollYProgress, {
+    const scaleX = useSpring(leftScrollYProgress, {
         stiffness: 200,
         damping: 40,
         restDelta: 0.001,
     });
 
     useEffect(() => {
-        return scrollY.on("change", (latest) => {
+        return leftScrollY.on("change", (latest) => {
             setIsScrolled(latest > 50);
         });
-    }, [scrollY]);
+    }, [leftScrollY]);
 
     const isLoom = project.video?.includes("loom.com/share");
     const embedUrl = isLoom ? project.video.replace("loom.com/share/", "loom.com/embed/") + "?autoplay=1&muted=1&preload=1&hide_owner=true&hide_share=true&hide_title=true&hide_embed_code=true" : null;
@@ -80,7 +83,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                     backdropFilter: useTransform(navbarBlur, (b) => `blur(${b}px)`),
                     borderBottom: useTransform(navbarOpacity, (o) => `1px solid rgba(255,255,255,${o * 0.06})`),
                 }}
-                className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 border-b border-white/0"
+                className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 sm:px-10 md:px-[53px] py-5 border-b border-white/0"
             >
                 <div className="flex items-center gap-8">
                     <Link href={backHref} className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors group">
@@ -98,10 +101,13 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
             </motion.nav>
 
             {/* ── Main Layout Container ── */}
-            <div className="flex flex-col lg:flex-row w-full min-h-screen">
+            <div className="flex flex-col lg:flex-row w-full lg:h-screen lg:overflow-hidden bg-black">
                 
                 {/* ── Left Column (70%) ── */}
-                <div className="w-full lg:w-[70%] border-r border-white/5 flex flex-col">
+                <div 
+                    ref={leftPaneRef}
+                    className="w-full lg:w-[70%] lg:h-screen lg:overflow-y-auto border-r border-white/5 flex flex-col hide-scrollbar"
+                >
                     
                     {/* Cinematic Hero Section - Contained in 70% column */}
                     <section className="relative w-full min-h-[85vh] flex flex-col items-center justify-center pt-24 pb-12 overflow-hidden border-b border-white/5">
@@ -122,7 +128,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,black_90%)] opacity-60" />
                 </div>
 
-                <div className="relative z-10 w-full max-w-7xl flex flex-col items-start gap-8 md:gap-16 px-6 md:px-0">
+                <div className="relative z-10 w-full max-w-7xl flex flex-col items-start gap-8 md:gap-16 px-6 sm:px-10 md:px-[53px]">
                     {/* Meta Section - Moved above Theater for better vertical flow and description visibility */}
                     <div className="w-full text-left order-1">
                         <motion.div
@@ -176,8 +182,8 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
 
 
                     {/* Main Content Area */}
-                    <section className="px-6 md:px-12 pt-12 pb-32">
-                        <div className="max-w-4xl mx-auto relative">
+                    <section className="px-6 sm:px-10 md:px-[53px] pt-12 pb-32">
+                        <div className="max-w-5xl relative">
 
                 {/* Project Description (Moved down here for readability) */}
                 {project.description && (
@@ -296,8 +302,8 @@ export function ProjectDetails({ project, content, caseStudies, nextProject }: P
                 </div>
 
                 {/* ── Right Column (Sidebar - 30%) ── */}
-                <aside className="hidden lg:flex lg:w-[30%] flex-col sticky top-0 h-screen border-l border-white/0 overflow-hidden bg-black/20">
-                    <div className="h-full flex flex-col pt-32 pb-12 px-8">
+                <aside className="w-full lg:w-[30%] lg:h-screen lg:overflow-y-auto flex flex-col hide-scrollbar border-l border-white/0 bg-black/20">
+                    <div className="h-full flex flex-col pt-32 pb-12 pl-8 pr-6 sm:pr-10 md:pr-[53px]">
                         <div className="flex items-center justify-between mb-8 shrink-0">
                             <h2 className="font-heading text-sm font-bold text-neutral-500 uppercase tracking-[0.3em]">Deep Dives</h2>
                             <div className="px-2 py-0.5 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold text-white/40">
