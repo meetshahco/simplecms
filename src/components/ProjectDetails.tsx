@@ -66,6 +66,43 @@ export function ProjectDetails({ project, content, caseStudies, nextProject, ini
     const activeScrollY = (hasCaseStudies && !isSidebarCollapsed) ? paneScrollY : windowScrollY;
     const scrollProgress = useMotionValue(0);
 
+    // ── Robust Scroll Sync (Pane <-> Window) ──
+    const lastScrollPos = useRef(0);
+    const prevCollapsed = useRef(isSidebarCollapsed);
+
+    // Track scroll in real-time to have the handoff value ready
+    useEffect(() => {
+        const handleScroll = () => {
+            const isDual = hasCaseStudies && !isSidebarCollapsed && window.innerWidth >= 1024;
+            lastScrollPos.current = isDual ? (leftPaneRef.current?.scrollTop || 0) : window.scrollY;
+        };
+
+        if (hasCaseStudies && !isSidebarCollapsed) {
+            const pane = leftPaneRef.current;
+            pane?.addEventListener('scroll', handleScroll);
+            return () => pane?.removeEventListener('scroll', handleScroll);
+        } else {
+            window.addEventListener('scroll', handleScroll);
+            return () => window.removeEventListener('scroll', handleScroll);
+        }
+    }, [isSidebarCollapsed, hasCaseStudies]);
+
+    // Perform the handoff when sidebar toggles
+    useEffect(() => {
+        if (prevCollapsed.current !== isSidebarCollapsed) {
+            const isDual = hasCaseStudies && !isSidebarCollapsed && window.innerWidth >= 1024;
+            
+            if (isDual && leftPaneRef.current) {
+                leftPaneRef.current.scrollTop = lastScrollPos.current;
+            } else if (!isDual) {
+                // Use a small timeout to ensure DOM has reflowed for window scroll
+                const targetScroll = lastScrollPos.current;
+                setTimeout(() => window.scrollTo(0, targetScroll), 0);
+            }
+            prevCollapsed.current = isSidebarCollapsed;
+        }
+    }, [isSidebarCollapsed, hasCaseStudies]);
+
     // Sync scrollProgress with the correct source based on sidebar state
     useEffect(() => {
         const source = (hasCaseStudies && !isSidebarCollapsed) ? paneScrollYProgress : windowScrollYProgress;
@@ -82,6 +119,90 @@ export function ProjectDetails({ project, content, caseStudies, nextProject, ini
     // Navbar transition threshold - linked to active scroll state
     const titleOpacity = useTransform(activeScrollY, [100, 200], [0, 1]);
     const titleY = useTransform(activeScrollY, [100, 200], [10, 0]);
+
+    // ── Global Caption Styles Overrides ──
+    // Injected to bypass prose engine defaults and force editorial alignment
+    const globalCaptionStyles = (
+        <style dangerouslySetInnerHTML={{ __html: `
+            /* Force centering on all figcaptions within the reader */
+            .prose-reading figure, 
+            .prose-reading .figure-wrapper {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 0.75rem !important; /* Tight gap-3 equivalent */
+                margin-top: 3rem !important;
+                margin-bottom: 3rem !important;
+                width: 100% !important;
+            }
+
+            .prose-reading figcaption,
+            .prose-reading .image-caption {
+                text-align: center !important;
+                width: 100% !important;
+                margin-top: 0 !important;
+                color: #737373 !important; /* neutral-500 */
+                font-weight: 400 !important;
+                font-size: 0.75rem !important;
+                letter-spacing: 0.025em !important;
+                max-width: 32rem !important; /* reduced width for better centering */
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+
+            /* Strip any default prose margins from images inside these containers */
+            .prose-reading figure img,
+            .prose-reading .figure-wrapper img {
+                margin-bottom: 0 !important;
+                margin-top: 0 !important;
+            }
+
+            /* Ultra-tight paragraph spacing override */
+            .prose-reading p {
+                margin-top: 0.4rem !important;
+                margin-bottom: 0.4rem !important;
+            }
+
+            .prose-reading h1, .prose-reading h2, .prose-reading h3 {
+                margin-top: 2.5rem !important;
+                margin-bottom: 2.5rem !important;
+            }
+
+            /* Fading Blockquote UI with #3d3d3d BG */
+            .prose-reading blockquote {
+                background: linear-gradient(90deg, #3d3d3d 0%, #3d3d3d 60%, transparent 100%) !important;
+                color: #ffffff !important;
+                border-left: 4px solid #ffffff !important;
+                padding: 1.5rem 4rem 1.5rem 2rem !important;
+                font-style: italic !important;
+                margin: 2.5rem 0 !important;
+            }
+
+            /* Global Image Radius Overrides */
+            .prose-reading img,
+            .prose-reading .figure-wrapper img,
+            .prose-reading .mockup-container img {
+                border-radius: 0.75rem !important; /* rounded-xl */
+            }
+
+            @media (min-width: 768px) {
+                .prose-reading img,
+                .prose-reading .figure-wrapper img,
+                .prose-reading .mockup-container img {
+                    border-radius: 1rem !important; /* rounded-2xl */
+                }
+            }
+
+            /* Cinematic Text Highlight (Mark) - Golden Accent */
+            .prose-reading mark {
+                background-color: #fbbf24 !important;
+                color: #000000 !important;
+                padding: 0.1em 0.3em !important;
+                border-radius: 0.25rem !important;
+                font-weight: 600 !important;
+            }
+        `}} />
+    );
 
     const scaleX = useSpring(scrollProgress, {
         stiffness: 200,
@@ -115,6 +236,8 @@ export function ProjectDetails({ project, content, caseStudies, nextProject, ini
 
     return (
         <div className="min-h-screen w-full bg-black text-white">
+            {globalCaptionStyles}
+
             {/* ── Reading progress bar (Persistent Global) ── */}
             <motion.div
                 className="fixed top-0 left-0 right-0 h-[2px] bg-white/80 origin-left z-[130]"
@@ -152,8 +275,8 @@ export function ProjectDetails({ project, content, caseStudies, nextProject, ini
                     
                     <motion.div 
                         style={{ 
-                            opacity: activeCaseStudy ? 1 : titleOpacity, 
-                            y: activeCaseStudy ? 0 : titleY 
+                            opacity: titleOpacity, 
+                            y: titleY 
                         }}
                         className="hidden md:flex items-center gap-3 border-l border-white/10 pl-8"
                     >
@@ -248,7 +371,11 @@ export function ProjectDetails({ project, content, caseStudies, nextProject, ini
                                         </div>
                                     )}
 
-                                    {content && <RichText content={content} />}
+                                    {content && (
+                                        <div className="max-w-4xl mx-auto">
+                                            <RichText content={content} />
+                                        </div>
+                                    )}
 
                                     {/* Mobile-only Deep Dive Section */}
                                     {hasCaseStudies && (
@@ -323,22 +450,24 @@ export function ProjectDetails({ project, content, caseStudies, nextProject, ini
                             >
                                 <section className="px-6 sm:px-10 md:px-[53px] pt-32 pb-8">
 
-                                    <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white mb-8">{activeCaseStudy.title}</h1>
+                                    <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-bold tracking-normal leading-[1.15] text-white mb-8">{activeCaseStudy.title}</h1>
                                     {activeCaseStudy.description && (
-                                        <div className="mb-12 relative pl-8 border-l-2 border-white/10">
+                                        <div className="mb-6 relative pl-8 border-l-2 border-white/10">
                                             <p className="text-lg md:text-xl text-neutral-400 leading-relaxed italic">{activeCaseStudy.description}</p>
                                         </div>
                                     )}
                                 </section>
                                 {activeCaseStudy.coverImage && (
-                                    <section className="px-6 sm:px-10 md:px-[53px] py-12">
+                                    <section className="px-6 sm:px-10 md:px-[53px] pt-4 pb-12">
                                         <div className="relative aspect-video w-full overflow-hidden rounded-[32px] md:rounded-[48px] bg-white/5 border border-white/10 shadow-2xl">
                                             <img src={activeCaseStudy.coverImage} alt={activeCaseStudy.title} className="w-full h-full object-cover" />
                                         </div>
                                     </section>
                                 )}
                                 <section className="px-6 sm:px-10 md:px-[53px] pb-32">
-                                    <RichText content={activeCaseStudy.content} as="article" />
+                                    <div className="max-w-4xl mx-auto">
+                                        <RichText content={activeCaseStudy.content} as="article" />
+                                    </div>
                                 </section>
                             </motion.div>
                         )}
@@ -353,7 +482,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject, ini
                         animate={{ 
                             right: isSidebarCollapsed ? "20px" : "calc(30% - 20px)",
                         }}
-                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                        transition={{ duration: 0.5 }}
                         onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                         className="hidden lg:flex fixed bottom-10 z-[100] w-10 h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white shadow-2xl items-center justify-center hover:bg-white hover:text-black hover:scale-110 transition-all active:scale-95 group"
                         title={isSidebarCollapsed ? "Expand Deep Dives" : "Collapse Deep Dives"}
@@ -415,7 +544,7 @@ export function ProjectDetails({ project, content, caseStudies, nextProject, ini
                                                 setActiveCaseStudySlug(study.slug);
                                                 leftPaneRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
                                             }}
-                                            className={`w-full block text-left group ${isActive ? 'ring-2 ring-white/10 rounded-2xl' : ''}`}
+                                            className="w-full block text-left group"
                                         >
                                             <motion.div 
                                                 initial={{ opacity: 0, x: 20 }} 
@@ -423,8 +552,8 @@ export function ProjectDetails({ project, content, caseStudies, nextProject, ini
                                                 transition={{ delay: i * 0.1 }} 
                                                 className={`relative p-4 rounded-2xl border transition-all hover:scale-[1.02] ${
                                                     isActive 
-                                                        ? 'border-white/20 bg-white/[0.05]' 
-                                                        : 'border-white/5 bg-white/[0.02] hover:border-white/20'
+                                                        ? 'border-white/30 bg-white/[0.08] shadow-[0_0_20px_rgba(255,255,255,0.05)]' 
+                                                        : 'border-white/5 bg-white/[0.02] group-hover:border-white/20 group-hover:bg-white/[0.04]'
                                                 }`}
                                             >
                                                 <div className="aspect-[16/9] w-full rounded-xl overflow-hidden mb-4 relative">
