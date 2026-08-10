@@ -23,7 +23,7 @@ export default function HomePage() {
             <div className="flex items-center gap-6">
               <div className="relative w-[80px] h-[80px] rounded-full overflow-hidden flex-shrink-0 border border-[#CCCCCC] bg-[#FFFFFF] shadow-sm">
                 <Image
-                  src="/assets/meet_shah.jpg"
+                  src="/assets/meet_shah.webp"
                   alt="Meet Shah"
                   fill
                   className="object-cover"

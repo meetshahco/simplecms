@@ -7,9 +7,9 @@ export const metadata: Metadata = {
   description:
     "Portfolio of Meet Shah — product designer, engineer, and AI enthusiast building interfaces at the frontier of human and machine.",
   icons: {
-    icon: "/icon.png",
-    shortcut: "/icon.png",
-    apple: "/icon.png",
+    icon: "/icon.webp",
+    shortcut: "/icon.webp",
+    apple: "/icon.webp",
   },
   openGraph: {
     title: "Meet Shah — Product Designer & Engineer",
