@@ -1,5 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Cursive:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+@font-face {
+  font-family: "Figma Hand";
+  src: url("/assets/fonts/figma-hand-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Figma Hand";
+  src: url("/assets/fonts/figma-hand-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 
 @theme inline {
@@ -25,8 +42,15 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
-  --font-sans: var(--font-inter);
-  --font-heading: var(--font-outfit);
+  --font-sans: var(--font-jost), sans-serif;
+  --font-heading: var(--font-geologica), sans-serif;
+  --font-primary: var(--font-jost), sans-serif;
+  --font-secondary: var(--font-geologica), sans-serif;
+  --font-accent: "Figma Hand", "Edu NSW ACT Cursive", cursive;
+  --font-display: "Figma Hand", "Edu NSW ACT Cursive", cursive;
+  --font-jost: var(--font-jost), sans-serif;
+  --font-geologica: var(--font-geologica), sans-serif;
+  --font-figma-hand: "Figma Hand", "Edu NSW ACT Cursive", cursive;
 }
 
 :root {
@@ -50,6 +74,82 @@
   --input: #262626;
   --ring: #d4d4d4;
   --radius: 0.5rem;
+
+  /* ── Interim Design Tokens ────────────────────────────── */
+  --bg-page: #F5F5F5;
+  --color-title: #3D3D3D;
+  --color-body: #666666;
+  --color-muted: #B8B8B8;
+  --color-chip-text: #8F8F8F;
+  --color-chip-bg: #FAFAFA;
+  --color-border-ruler: #E5E5E5;
+
+  /* Brand Colors */
+  --brand-kwikpay: #0980FF;
+  --brand-bob: #F15A29;
+  --brand-joveo: #B7669E;
+  --brand-hdfc: #EF3E3A;
+  --brand-ootb: #1556EF;
+
+  /* Action Buttons & Social Icons */
+  --btn-bg: #FFFFFF;
+  --btn-border: #CCCCCC;
+  --btn-radius: 8px;
+  --btn-padding: 8px;
+  --btn-text-color: #666666;
+  --btn-icon-size: 16px;
+  --social-icon-size: 20px;
+  --social-icon-color: #666666;
+
+  /* Container & Padding */
+  --container-max-w: 1018px;
+  --content-max-w: 986px;
+  --padding-internal: 16px;
+  --padding-desktop-top: 80px;
+  --padding-mobile-top: 40px;
+  --min-padding-desktop-x: 120px;
+  --min-padding-mobile-x: 64px;
+
+  /* Typography Variables */
+  --type-title-font: var(--font-figma-hand), "Figma Hand", var(--font-caveat), cursive;
+  --type-title-size: 28px;
+  --type-title-weight: 400;
+  --type-title-tracking: 0em;
+
+  --type-subtitle-font: var(--font-jost), sans-serif;
+  --type-subtitle-size: 20px;
+  --type-subtitle-weight: 400;
+  --type-subtitle-tracking: 0.04em;
+
+  --type-section-font: var(--font-geologica), sans-serif;
+  --type-section-size: 10px;
+  --type-section-weight: 500;
+  --type-section-tracking: 0.02em;
+
+  --type-body-font: var(--font-jost), sans-serif;
+  --type-body-size: 12px;
+  --type-body-weight: 400;
+  --type-body-tracking: 0.04em;
+
+  --type-highlight-font: var(--font-figma-hand), "Figma Hand", var(--font-caveat), cursive;
+  --type-highlight-size: 12px;
+  --type-highlight-weight: 700;
+  --type-highlight-tracking: 0.04em;
+
+  --type-case-study-title-font: var(--font-jost), sans-serif;
+  --type-case-study-title-size: 24px;
+  --type-case-study-title-weight: 500;
+  --type-case-study-title-tracking: 0.04em;
+
+  --type-github-title-font: var(--font-jost), sans-serif;
+  --type-github-title-size: 12px;
+  --type-github-title-weight: 400;
+  --type-github-title-tracking: 0.02em;
+
+  --type-chip-font: var(--font-jost), sans-serif;
+  --type-chip-size: 10px;
+  --type-chip-weight: 400;
+  --type-chip-tracking: 0.04em;
 }
 
 html, body {

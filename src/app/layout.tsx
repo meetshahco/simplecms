@@ -1,8 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Outfit, Caveat } from "next/font/google";
+import { Inter, Outfit, Caveat, Jost, Geologica } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
+
+const jost = Jost({
+  variable: "--font-jost",
+  subsets: ["latin"],
+});
+
+const geologica = Geologica({
+  variable: "--font-geologica",
+  subsets: ["latin"],
+});
 
 const inter = Inter({
   variable: "--font-inter",
@@ -59,8 +69,13 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Cursive:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      </head>
       <body
-        className={`${inter.variable} ${outfit.variable} ${caveat.variable} antialiased bg-[#0a0a0a] text-foreground overflow-x-hidden`}
+        className={`${jost.variable} ${geologica.variable} ${caveat.variable} ${inter.variable} ${outfit.variable} antialiased bg-[#0a0a0a] text-foreground overflow-x-hidden`}
       >
         <Providers>
           <ContactAnimationProvider initialContactCta={splashPlayed}>
