@@ -3,12 +3,10 @@ import { auth } from "@/lib/auth";
 
 // Hardcoding for production to ensure it works even if env vars are missing
 const ADMIN_DOMAIN = "admin.meetshah.co";
+const OLD_DOMAIN = "old.meetshah.co";
 
 export default auth((request) => {
     const url = request.nextUrl.clone();
-    const hostname = request.headers.get("host") || "";
-    const xForwardedHost = request.headers.get("x-forwarded-host");
-
     const currentHost = request.headers.get("host") || "";
     const pathname = url.pathname;
 
@@ -29,16 +27,52 @@ export default auth((request) => {
             currentHost.startsWith("admin.localhost")
         );
 
+    const isOldSubdomain =
+        !isGuestSubdomain &&
+        !isAdminSubdomain && (
+            currentHost.startsWith("old.meetshah.co") ||
+            currentHost.startsWith("old.localhost")
+        );
+
+    // ─── Old Subdomain Routing (old.meetshah.co / old.localhost) ───────
+    if (isOldSubdomain) {
+        // Skip internal Next.js routes, static assets, and favicon
+        if (
+            pathname.startsWith("/_next/") ||
+            pathname.startsWith("/assets/") ||
+            pathname.startsWith("/media/") ||
+            pathname === "/favicon.ico" ||
+            pathname === "/favicon.png"
+        ) {
+            return;
+        }
+
+        // Prevent double-prefixing: if someone visits old.meetshah.co/old/...
+        // redirect them to old.meetshah.co/... (strip the /old prefix)
+        if (pathname.startsWith("/old")) {
+            const cleanPath = pathname.replace(/^\/old/, "") || "/";
+            return NextResponse.redirect(new URL(cleanPath, request.url));
+        }
+
+        // For API routes, don't prefix with /old
+        if (pathname.startsWith("/api/")) {
+            return;
+        }
+
+        // Map root / to /old, and subpaths /xyz to /old/xyz
+        const mappedOldPath = pathname === "/" ? "/old" : `/old${pathname}`;
+        url.pathname = mappedOldPath;
+        return NextResponse.rewrite(url);
+    }
+
     // Check authentication
     const isLoggedIn = !!request.auth;
     const isApiCmsRoute = pathname.startsWith("/api/cms");
-    // After rewrite, internal paths on the subdomain might look like /admin/...
-    // but before rewrite they could just be /
 
     // We will handle Auth checks *after* figuring out the mapped path
     let mappedPathname = pathname;
 
-    // ─── Subdomain routing ───────────────────────────────────
+    // ─── Admin / Guest Subdomain routing ──────────────────────
     if (isAdminSubdomain || isGuestSubdomain) {
         // Skip internal Next.js routes, static assets, and favicon
         if (
@@ -101,7 +135,7 @@ export default auth((request) => {
         return NextResponse.redirect(new URL("/admin", request.url));
     }
 
-    // ─── Apply Rewrites / Redirects ───────────────────────────
+    // ─── Apply Rewrites / Redirects for Admin / Guest ─────────
     if (isAdminSubdomain || isGuestSubdomain) {
         // Don't rewrite API routes - they should stay at /api/...
         if (pathname.startsWith("/api/")) {
@@ -121,8 +155,8 @@ export default auth((request) => {
         });
     }
 
-    // ─── Main domain: redirect /admin access to subdomain ──
-    if (!isAdminSubdomain && !isGuestSubdomain && pathname.startsWith("/admin")) {
+    // ─── Main domain: redirect /admin access to subdomain ────
+    if (!isAdminSubdomain && !isGuestSubdomain && !isOldSubdomain && pathname.startsWith("/admin")) {
         // In local development, don't force redirect to production admin domain
         if (currentHost.includes("localhost") || currentHost.includes("127.0.0.1") || currentHost.startsWith("192.168.")) {
             return;
@@ -131,6 +165,19 @@ export default auth((request) => {
         const adminSubPath = pathname.replace(/^\/admin/, "") || "/";
         return NextResponse.redirect(
             new URL(`https://${ADMIN_DOMAIN}${adminSubPath}`)
+        );
+    }
+
+    // ─── Main domain: redirect /old access to subdomain in production ──
+    if (!isAdminSubdomain && !isGuestSubdomain && !isOldSubdomain && pathname.startsWith("/old")) {
+        // In local development, allow direct /old access
+        if (currentHost.includes("localhost") || currentHost.includes("127.0.0.1") || currentHost.startsWith("192.168.")) {
+            return;
+        }
+
+        const oldSubPath = pathname.replace(/^\/old/, "") || "/";
+        return NextResponse.redirect(
+            new URL(`https://${OLD_DOMAIN}${oldSubPath}`)
         );
     }
 });

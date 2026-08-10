@@ -1,15 +1,14 @@
 import { getProject, getProjectContent, listCaseStudies, listProjects, getCaseStudyContent } from "@/lib/cms/storage";
-import { notFound } from "next/navigation";
-import { ProjectDetails } from "@/components/v2/ProjectDetails";
-import { Suspense } from "react";
-
 export const dynamic = "force-dynamic";
+import { notFound } from "next/navigation";
+import { ProjectDetails } from "@/components/ProjectDetails";
+import { Suspense } from "react";
 
 interface PageProps {
     params: Promise<{ id: string }>;
 }
 
-export default async function ProjectPage({ params }: PageProps) {
+export default async function OldProjectPage({ params }: PageProps) {
     const { id } = await params;
 
     const [project, content, allCaseStudies, allProjects] = await Promise.all([
@@ -40,13 +39,15 @@ export default async function ProjectPage({ params }: PageProps) {
     const nextProjectToDisplay = allProjects.length > 1 ? nextProject : null;
 
     return (
-        <Suspense fallback={null}>
-            <ProjectDetails 
-                project={project} 
-                content={content} 
-                caseStudies={caseStudiesWithContent} 
-                nextProject={nextProjectToDisplay}
-            />
-        </Suspense>
+        <>
+            <Suspense fallback={null}>
+                <ProjectDetails 
+                    project={project} 
+                    content={content} 
+                    caseStudies={caseStudiesWithContent} 
+                    nextProject={nextProjectToDisplay}
+                />
+            </Suspense>
+        </>
     );
 }

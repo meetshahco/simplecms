@@ -457,7 +457,7 @@ const DEFAULT_SETTINGS: Settings = {
         medium: "https://medium.com/@meet",
     },
     adminName: "Meet Shah",
-    adminEmail: "hello@meetshah.design",
+    adminEmail: "hey@meetshah.co",
 };
 
 export async function getSettings(): Promise<Settings> {

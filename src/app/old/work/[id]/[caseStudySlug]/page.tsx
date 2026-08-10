@@ -1,16 +1,13 @@
-import { getProject, getProjectContent, listCaseStudies, listProjects, getCaseStudyContent } from "@/lib/cms/storage";
+import { getProject, getProjectContent, listCaseStudies, getCaseStudyContent, listProjects } from "@/lib/cms/storage";
+export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
-import { ProjectDetails } from "@/components/v2/ProjectDetails";
+import { ProjectDetails } from "@/components/ProjectDetails";
 import { Suspense } from "react";
 
-export const dynamic = "force-dynamic";
-
-interface PageProps {
-    params: Promise<{ id: string }>;
-}
-
-export default async function ProjectPage({ params }: PageProps) {
-    const { id } = await params;
+export default async function OldCaseStudyPage(props: {
+    params: Promise<{ id: string; caseStudySlug: string }>;
+}) {
+    const { id, caseStudySlug } = await props.params;
 
     const [project, content, allCaseStudies, allProjects] = await Promise.all([
         getProject(id),
@@ -46,6 +43,7 @@ export default async function ProjectPage({ params }: PageProps) {
                 content={content} 
                 caseStudies={caseStudiesWithContent} 
                 nextProject={nextProjectToDisplay}
+                initialCaseStudySlug={caseStudySlug}
             />
         </Suspense>
     );
