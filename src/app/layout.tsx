@@ -41,12 +41,38 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings().catch(() => null);
 
+  const title = settings?.siteTitle || "Meet Shah";
+  const description = settings?.metaDescription || "Product Designer and Developer";
+
   return {
-    title: settings?.siteTitle || "Meet Shah",
-    description: settings?.metaDescription || "Product Designer and Developer",
+    title,
+    description,
     icons: {
-      icon: settings?.favicon || "/favicon.ico",
-    }
+      icon: settings?.favicon || "/assets/meet_shah.jpg",
+      shortcut: "/assets/meet_shah.jpg",
+      apple: "/assets/meet_shah.jpg",
+    },
+    openGraph: {
+      title,
+      description,
+      url: "https://www.meetshah.co",
+      siteName: "Meet Shah",
+      images: [
+        {
+          url: "/assets/icons/portfolio_OG.png",
+          width: 1200,
+          height: 630,
+          alt: "Meet Shah Portfolio",
+        },
+      ],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/assets/icons/portfolio_OG.png"],
+    },
   };
 }
 
