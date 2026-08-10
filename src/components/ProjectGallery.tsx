@@ -48,9 +48,9 @@ export function ProjectGallery({ projects }: { projects: Project[] }) {
     }
 
     return (
-        <section className="pt-0 pb-8 px-4 md:px-6">
-            <div className="mx-auto max-w-5xl">
-                <div className="grid grid-cols-1 gap-8 md:gap-16">
+        <section className="pt-0 pb-32">
+            <div className="mx-auto max-w-7xl">
+                <div className="grid grid-cols-1 gap-12 md:gap-24">
                     {projects.map((project, index) => (
                         <ProjectCard_Work key={project.id} project={project} index={index} />
                     ))}

@@ -13,33 +13,22 @@ export function ProjectCard_Work({ project, index }: { project: Project, index: 
     // Scroll progress specifically for this card
     const { scrollYProgress } = useScroll({
         target: cardRef,
-        offset: ["start end", "end start"], // Track from when it enters bottom to leaves top
+        offset: ["start end", "end start"],
     });
-    // Spotlight position
-    const mouseX = useMotionValue(0);
-    const mouseY = useMotionValue(0);
 
-    // 3D tilt tracking (-0.5 to 0.5)
     const xPos = useMotionValue(0);
     const yPos = useMotionValue(0);
 
     const xSpring = useSpring(xPos, { stiffness: 300, damping: 40 });
     const ySpring = useSpring(yPos, { stiffness: 300, damping: 40 });
 
-    const rotateX = useTransform(ySpring, [-0.5, 0.5], ["3deg", "-3deg"]);
-    const rotateY = useTransform(xSpring, [-0.5, 0.5], ["-3deg", "3deg"]);
+    const rotateX = useTransform(ySpring, [-0.5, 0.5], ["2deg", "-2deg"]);
+    const rotateY = useTransform(xSpring, [-0.5, 0.5], ["-2deg", "2deg"]);
 
     function handleMouseMove({ currentTarget, clientX, clientY }: MouseEvent) {
         const { left, top, width, height } = currentTarget.getBoundingClientRect();
-
-        // Spotlight
-        mouseX.set(clientX - left);
-        mouseY.set(clientY - top);
-
-        // 3D Tilt
         const xPct = (clientX - left) / width - 0.5;
         const yPct = (clientY - top) / height - 0.5;
-
         xPos.set(xPct);
         yPos.set(yPct);
     }
@@ -49,33 +38,13 @@ export function ProjectCard_Work({ project, index }: { project: Project, index: 
         yPos.set(0);
     }
 
-    // Scroll-linked focus/defocus effect
-    // 0 = just entered bottom, 0.5 = center, 1 = leaves top
-    // Fixed: Ensure cards at the top (Progress > 0.4) are always 100% focused
-    const scrollScale = useTransform(
-        scrollYProgress,
-        [0, 0.2, 0.4, 1], 
-        [0.9, 1, 1, 1]
-    );
-
-    const scrollOpacity = useTransform(
-        scrollYProgress,
-        [0, 0.15, 0.3, 1],
-        [0.6, 1, 1, 1]
-    );
-
-    // Y parallax to make the scrolling feel smoother
-    const scrollYParallax = useTransform(
-        scrollYProgress,
-        [0, 1],
-        [40, -40] // Reduced vertical movement to keep the card stable longer
-    );
-
-    // Exempt the first two cards from the defocusing effect so they stay sharp at the top
-    const isFirstTwo = index < 2;
-    const scale = isFirstTwo ? 1 : scrollScale;
-    const opacity = isFirstTwo ? 1 : scrollOpacity;
-    const yParallax = isFirstTwo ? 0 : scrollYParallax;
+    const scrollScale = useTransform(scrollYProgress, [0, 0.2, 0.4, 1], [0.95, 1, 1, 1]);
+    const scrollOpacity = useTransform(scrollYProgress, [0, 0.15, 0.3, 1], [0.4, 1, 1, 1]);
+    
+    // Exempt first card from scroll-in effects
+    const isFirst = index === 0;
+    const scale = isFirst ? 1 : scrollScale;
+    const opacity = isFirst ? 1 : scrollOpacity;
 
     return (
         <Link href={`/work/${project.id}`}>
@@ -88,86 +57,86 @@ export function ProjectCard_Work({ project, index }: { project: Project, index: 
                     rotateY,
                     scale,
                     opacity,
-                    y: yParallax,
                     transformPerspective: 1200,
                 }}
                 className={cn(
-                    "group relative w-full cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-neutral-900 transition-all duration-500 hover:border-white/30 hover:shadow-[0_0_40px_rgba(255,255,255,0.05)]",
-                    "flex flex-col md:grid md:grid-cols-2 md:aspect-[32/9]" // Unified aspect ratio for perfect alignment
+                    "group relative w-full cursor-pointer overflow-hidden rounded-[2rem] bg-[#111111] transition-all duration-700 hover:shadow-[0_0_80px_rgba(0,0,0,0.5)]",
+                    "flex flex-col md:grid md:grid-cols-12 md:aspect-[21/9]"
                 )}
             >
-                {/* Ambient Glow */}
-                <motion.div
-                    className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100"
-                    style={{
-                        background: useMotionTemplate`
-            radial-gradient(
-              600px circle at ${mouseX}px ${mouseY}px,
-              rgba(255, 255, 255, 0.08),
-              transparent 80%
-            )
-          `,
-                    }}
-                />
-
-                {/* Left: GIF/Video Preview */}
-                <div className="relative aspect-video md:aspect-auto md:h-full w-full overflow-hidden border-b border-white/5 md:border-b-0 md:border-r bg-neutral-800">
-                    {/* Video that plays on hover - Z-index higher to sit on top of image when active */}
-                    {project.video && (
-                        <div className="absolute inset-0 z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100 bg-neutral-900/40">
+                {/* Left: Media Column (7 Cols) */}
+                <div className="relative md:col-span-7 h-[300px] md:h-full w-full overflow-hidden bg-neutral-900">
+                    {/* Cinematic Video/Image Wrapper */}
+                    <div className="absolute inset-0 z-0">
+                        {project.video ? (
                             <video
                                 src={project.video}
                                 muted
                                 loop
                                 playsInline
-                                autoPlay={true}
-                                className="h-full w-full object-cover scale-110 transition-transform duration-700"
+                                autoPlay
+                                className="h-full w-full object-cover scale-105 transition-transform duration-[2000ms] ease-out group-hover:scale-110"
                             />
-                        </div>
-                    )}
+                        ) : project.image && (
+                            <Image
+                                src={project.image}
+                                alt={project.title}
+                                fill
+                                className="object-cover scale-105 transition-transform duration-[2000ms] ease-out group-hover:scale-110"
+                            />
+                        )}
+                    </div>
 
-                    {/* Fallback Image */}
-                    {project.image ? (
-                        <Image
-                            src={project.image}
-                            alt={project.title}
-                            fill
-                            unoptimized={project.image.toLowerCase().endsWith('.gif')}
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                    ) : (
-                        <div className="absolute inset-0 flex items-center justify-center bg-neutral-800">
-                            <ArrowRight className="w-8 h-8 text-neutral-700" />
+                    {/* Gradient Overlays for Cinematic Feel */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/40 z-10" />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-700 z-10" />
+                    
+                    {/* Category Label (Glass) */}
+                    <div className="absolute top-6 left-6 z-20">
+                        <div className="px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[10px] font-bold text-white/60 uppercase tracking-widest">
+                            {project.category?.split(',')[0]}
                         </div>
-                    )}
+                    </div>
                 </div>
 
-                {/* Right: Details */}
-                <div className="relative flex flex-col justify-between p-6 md:p-8 md:h-full overflow-hidden">
-                    <div className="flex-1 overflow-hidden">
-                        <h3 className="font-heading text-2xl lg:text-3xl font-bold text-white">{project.title}</h3>
-                        <p className="mt-3 text-sm md:text-base text-neutral-400 leading-relaxed line-clamp-2 md:line-clamp-3">{project.description}</p>
+                {/* Right: Info Column (5 Cols) */}
+                <div className="relative md:col-span-5 flex flex-col justify-between p-8 md:p-12 lg:p-16 bg-[#111111] border-l border-white/5">
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-4">
+                            <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">Project {String(index + 1).padStart(2, '0')}</span>
+                            <div className="h-[1px] w-8 bg-white/10" />
+                        </div>
+                        
+                        <h3 className="font-heading text-3xl lg:text-4xl xl:text-5xl font-bold text-white tracking-tight leading-[1.1] transition-colors group-hover:text-white">
+                            {project.title}
+                        </h3>
+                        
+                        <p className="text-sm md:text-base text-neutral-500 leading-relaxed font-light line-clamp-3">
+                            {project.description}
+                        </p>
 
-                        <div className="mt-4 flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 pt-2">
                             {project.tags.slice(0, 3).map((tag) => (
-                                <span key={tag} className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-neutral-300">
+                                <span key={tag} className="text-[10px] font-bold text-white/30 uppercase tracking-widest px-3 py-1 rounded-full border border-white/5 bg-white/[0.02]">
                                     {tag}
                                 </span>
                             ))}
-                            {project.caseStudyCount !== undefined && project.caseStudyCount > 0 && (
-                                <span className="rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-1 text-xs text-blue-400 font-medium">
-                                    {project.caseStudyCount} Case Studies
-                                </span>
-                            )}
                         </div>
                     </div>
 
-                    <div className="mt-4 flex items-end justify-end">
-                        <div className="rounded-full bg-white p-2.5 text-black transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                            <ArrowRight className="h-4 w-4 -rotate-45 transition-transform duration-300 group-hover:rotate-0" />
+                    <div className="mt-8 flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-[10px] font-bold text-white uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-[-10px] group-hover:translate-x-0">
+                            View Case Study <ArrowRight className="h-3 w-3" />
+                        </div>
+                        
+                        <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all duration-500 shadow-xl">
+                            <ArrowRight className="h-5 w-5 -rotate-45 group-hover:rotate-0 transition-transform duration-500" />
                         </div>
                     </div>
                 </div>
+
+                {/* Bottom Border Accent (Animated on Hover) */}
+                <div className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent w-full scale-x-0 group-hover:scale-x-100 transition-transform duration-1000" />
             </motion.div>
         </Link>
     );
