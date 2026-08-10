@@ -42,7 +42,11 @@ export default auth((request) => {
             pathname.startsWith("/assets/") ||
             pathname.startsWith("/media/") ||
             pathname === "/favicon.ico" ||
-            pathname === "/favicon.png"
+            pathname === "/favicon.png" ||
+            pathname === "/icon.png" ||
+            pathname === "/icon.webp" ||
+            pathname === "/apple-touch-icon.png" ||
+            pathname === "/icon"
         ) {
             return;
         }
@@ -80,7 +84,11 @@ export default auth((request) => {
             pathname.startsWith("/assets/") ||
             pathname.startsWith("/media/") ||
             pathname === "/favicon.ico" ||
-            pathname === "/favicon.png"
+            pathname === "/favicon.png" ||
+            pathname === "/icon.png" ||
+            pathname === "/icon.webp" ||
+            pathname === "/apple-touch-icon.png" ||
+            pathname === "/icon"
         ) {
             return;
         }
