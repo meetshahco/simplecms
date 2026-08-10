@@ -4,18 +4,24 @@
 
 @font-face {
   font-family: "Figma Hand";
-  src: url("/assets/fonts/figma-hand-regular.woff2") format("woff2");
-  font-weight: 400;
+  src: url("/assets/fonts/figma-hand-regular.woff2") format("woff2"),
+       url("/assets/fonts/FigmaHand-Regular.ttf") format("truetype");
+  font-weight: 100 600;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: "Figma Hand";
-  src: url("/assets/fonts/figma-hand-bold.woff2") format("woff2");
-  font-weight: 700;
+  src: url("/assets/fonts/figma-hand-bold.woff2") format("woff2"),
+       url("/assets/fonts/FigmaHand-Regular.ttf") format("truetype");
+  font-weight: 601 900;
   font-style: normal;
   font-display: swap;
+}
+
+.font-figma-hand {
+  font-family: "Figma Hand", "Edu NSW ACT Cursive", cursive !important;
 }
 
 
